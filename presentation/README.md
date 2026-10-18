@@ -1,11 +1,11 @@
 # Presentation (TELEMEDICON26 · Team Genesis)
 
-Six-slide 16:9 pitch deck for **CliffForge**, written in LaTeX Beamer. All diagrams and charts are native TikZ vector graphics
+Seven-slide 16:9 pitch deck for **CliffForge**, written in LaTeX Beamer. All diagrams and charts are native TikZ vector graphics
 (no raster screenshots), so they stay crisp at any projection size.
 
 | File | Purpose |
 |---|---|
-| `main.tex` | deck source (6 slides: cover, problem & validation, solution & innovation, methodology, prototype/proof of concept, impact & next steps) |
+| `main.tex` | deck source (7 slides: cover, problem & validation, solution & innovation, methodology, prototype/proof of concept, validation at scale, impact & next steps) |
 | `references.bib` | verified bibliography (entries copied from the project's research bibliography; only cited works are kept) |
 | `TELEMEDICON26_CliffForge_Pitch.pdf` | compiled deck (committed so it can be viewed without LaTeX) |
 | `build.sh` | reproducible build, works from any directory |
@@ -19,7 +19,7 @@ Requires `pdflatex`, `latexmk`, `biber` and the `beamer`, `biblatex`, `pgf/tikz`
 bash presentation/build.sh        # -> presentation/TELEMEDICON26_CliffForge_Pitch.pdf (+ build/ with intermediates, git-ignored)
 ```
 
-The script finds TinyTeX's `biber` automatically, runs `latexmk` (three passes incl. biber) and prints the page count (6).
+The script finds TinyTeX's `biber` automatically, runs `latexmk` (three passes incl. biber) and prints the page count (7).
 
 ## Where the numbers come from
 
@@ -31,7 +31,7 @@ Every figure on slides 2 and 5 is taken from `results/summary.json` and `results
 * 324 -> 231 -> 34 -> 34 funnel - `results/metrics/funnel.json`; 82 of 316 recovered pairs - `results/metrics/generation_recall.json`
 * FEP+ 0.386 -> 0.644 is labelled as **prior internship research**, not a new result.
 
-`python scripts/validate_submission.py` checks that `main.tex` and the README contain exactly these values and that the PDF has six pages.
+`python scripts/validate_submission.py` checks that `main.tex` and the README contain exactly these values and that the PDF has seven pages.
 
 ## Notes
 

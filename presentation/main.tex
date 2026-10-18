@@ -1,5 +1,5 @@
 % !TEX program = pdflatex
-% TELEMEDICON26 - Team Genesis - CliffForge: six-slide pitch deck (Beamer 16:9, TikZ diagrams).
+% TELEMEDICON26 - Team Genesis - CliffForge: seven-slide pitch deck (Beamer 16:9, TikZ diagrams).
 % Every number below is taken from results/summary.json and results/metrics/*.json (reference run);
 % scripts/validate_submission.py checks that this file and README.md agree with those files.
 \documentclass[aspectratio=169,10pt]{beamer}
@@ -329,128 +329,105 @@
 \src{Sources: ChemProp \parencite{yang2019chemprop}; Moonshot data \parencite{boby2023moonshot}; FEP+ benchmark, prior work \parencite{ross2023fepbenchmark}. All results are new except the FEP+ line. The lead-optimization setting (14 cliffs) gave mixed results and informs the next stage.}
 \end{frame}
 
-% ============================================================== SLIDE 5b - larger dataset results
+% ============================================================== SLIDE 6 - larger dataset results
 \begin{frame}{Validation at Scale: Dablander MMP Dataset (1{,}924 molecules)}
 \begin{tikzpicture}[x=1cm,y=1cm]
-  \useasboundingbox (0,0.2) rectangle (14.38,-5.2);
+  \useasboundingbox (0,0.18) rectangle (14.38,-5.38);
 
-  % -------- header strip
-  \fill[slatelight] (0,0.2) rectangle (14.38,-0.35);
-  \node[font=\scriptsize,text=navy,anchor=west] at (0.15,-0.07)
-    {\textbf{Dataset:} 1{,}924 Mpro molecules \;\textperiodcentered\;
-     1{,}582 train / 181 test \;\textperiodcentered\;
-     9{,}323 training MMP pairs \;\textperiodcentered\;
-     cliff = Tanimoto $\geq$\,0.80 \textbf{and} $|\Delta\text{pIC}_{50}|$ $\geq$\,1.0};
+  % Two short dataset lines keep the charts below the header.
+  \fill[slatelight] (0,0.16) rectangle (14.38,-0.46);
+  \node[font=\scriptsize,text=navy,anchor=west] at (0.15,-0.02)
+    {\textbf{Dataset:} 1{,}924 Mpro molecules \;\textperiodcentered\; 1{,}582 train / 181 test \;\textperiodcentered\; 9{,}323 training MMP pairs};
+  \node[font=\scriptsize,text=navy,anchor=west] at (0.15,-0.29)
+    {\textbf{Cliff:} Tanimoto $\geq$\,0.80 \textbf{and} $|\Delta\text{pIC}_{50}|\geq$\,1.0};
 
-  % -------- PANEL A: Setting B lead-opt cliff detection (the main result)
-  \node[font=\fontsize{7.6}{9}\selectfont\bfseries,text=teal,anchor=north west] at (0,-0.5)
-    {A \;\; Lead-optimisation cliff detection};
-  \node[font=\tiny,text=slate,anchor=north west] at (0,-0.9)
-    {Setting B: test molecule vs.\ measured training reference \;\textperiodcentered\; 25 true cliffs \;\textperiodcentered\; 223 close pairs (Tan.\,$\geq$\,0.80)};
+  \draw[greyline,line width=0.4pt] (4.77,-0.58) -- (4.77,-4.42)
+                                   (9.58,-0.58) -- (9.58,-4.42);
 
-  % AP bar chart
-  \def\bw{0.95}\def\bscale{5.5}
-  \begin{scope}[shift={(0.6,-3.6)}]
-    \draw[greyline,line width=0.4pt] (0,0) -- (3.9,0);
+  % A: average precision in the lead-optimisation setting.
+  \node[font=\fontsize{7.6}{9}\selectfont\bfseries,text=teal,anchor=north west] at (0,-0.61)
+    {A \;\; Lead-optimisation cliffs};
+  \node[font=\tiny,text=slate,anchor=north west,align=left] at (0,-0.99)
+    {Average precision; Setting B (test vs.\ training)\\25 true cliffs among 223 close pairs};
+  \begin{scope}[shift={(0.48,-3.70)}]
+    \draw[greyline,line width=0.4pt] (0,0) -- (3.75,0);
     \foreach \v in {0,0.2,0.4,0.6,0.8} {
-      \draw[greyline,line width=0.3pt] (0,\v*\bscale) -- (3.9,\v*\bscale);
-      \node[font=\tiny,text=slate,anchor=east] at (-0.05,\v*\bscale) {\v};
+      \draw[greyline,line width=0.3pt] (0,\v*2.55) -- (3.75,\v*2.55);
+      \node[font=\tiny,text=slate,anchor=east] at (-0.05,\v*2.55) {\v};
     }
-    % CliffForge AP = 0.683
-    \fill[teal]     (0.3,0)   rectangle (0.3+\bw, 0.683*\bscale);
-    \node[font=\footnotesize\bfseries,text=navy,anchor=south] at (0.3+\bw/2, 0.683*\bscale) {0.683};
-    \node[lbl,anchor=north] at (0.3+\bw/2,-0.05) {CliffForge\\relative};
-    % ChemProp AP = 0.183
-    \fill[slatemid] (1.55,0)  rectangle (1.55+\bw, 0.183*\bscale);
-    \node[font=\footnotesize\bfseries,text=navy,anchor=south] at (1.55+\bw/2, 0.183*\bscale) {0.183};
-    \node[lbl,anchor=north] at (1.55+\bw/2,-0.05) {ChemProp\\absolute};
-    % 5-NN AP = 0.127
-    \fill[slatemid!55] (2.8,0)  rectangle (2.8+\bw, 0.127*\bscale);
-    \node[font=\footnotesize\bfseries,text=navy,anchor=south] at (2.8+\bw/2, 0.127*\bscale) {0.127};
-    \node[lbl,anchor=north] at (2.8+\bw/2,-0.05) {5-NN\\baseline};
-    % axis label
-    \node[font=\tiny\itshape,text=slate,anchor=north] at (1.95,-0.55) {Average Precision (AP)};
+    \fill[teal] (0.22,0) rectangle (1.02,0.683*2.55);
+    \fill[slatemid] (1.42,0) rectangle (2.22,0.183*2.55);
+    \fill[slatemid!55] (2.62,0) rectangle (3.42,0.127*2.55);
+    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (0.62,0.683*2.55) {0.683};
+    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (1.82,0.183*2.55) {0.183};
+    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (3.02,0.127*2.55) {0.127};
+    \node[lbl,anchor=north] at (0.62,-0.06) {CliffForge};
+    \node[lbl,anchor=north] at (1.82,-0.06) {ChemProp};
+    \node[lbl,anchor=north] at (3.02,-0.06) {5-NN};
   \end{scope}
+  \node[font=\tiny\bfseries,text=teal,anchor=north west] at (0.15,-4.16)
+    {Cliffs detected: 13/25 vs.\ 0/25 for both baselines};
 
-  % cliff-detection icons (caught / missed) — Setting B
-  \node[font=\tiny\bfseries,text=navy,anchor=north west] at (0,-3.8) {Cliffs caught at $\tau$=1.0:};
-  \foreach \i in {0,...,12} { \fill[teal]     (0.15+\i*0.38,-4.05) rectangle (0.55+\i*0.38,-3.85); }
-  \foreach \i in {13,...,24} { \draw[slatemid,line width=0.7pt] (0.15+\i*0.38,-4.05) rectangle (0.55+\i*0.38,-3.85); }
-  \node[font=\tiny,text=teal,anchor=west]  at (9.55,-3.95) {\textbf{13 / 25}  CliffForge (F1\,=\,0.634,  Prec\,=\,81\%)};
-  \foreach \i in {0,...,24} { \draw[slatemid,line width=0.7pt] (0.15+\i*0.38,-4.40) rectangle (0.55+\i*0.38,-4.20); }
-  \node[font=\tiny,text=slate,anchor=west] at (9.55,-4.30) {0 / 25  ChemProp \&\ 5-NN (F1\,=\,0)};
-
-  % -------- divider
-  \draw[greyline,line width=0.4pt] (4.85,-0.5) -- (4.85,-4.6);
-
-  % -------- PANEL B: Direction accuracy
-  \node[font=\fontsize{7.6}{9}\selectfont\bfseries,text=teal,anchor=north west] at (5.1,-0.5)
+  % B: direction accuracy. All plot elements stay inside the middle panel.
+  \node[font=\fontsize{7.6}{9}\selectfont\bfseries,text=teal,anchor=north west] at (4.95,-0.61)
     {B \;\; Cliff-direction accuracy};
-  \node[font=\tiny,text=slate,anchor=north west] at (5.1,-0.9)
-    {test-test pairs with $|\Delta\text{pIC}_{50}|\geq$\,1.0 \;\textperiodcentered\; $n$\,=\,63};
-
-  \begin{scope}[shift={(5.7,-3.6)}]
-    \draw[greyline,line width=0.4pt] (0,0) -- (4.2,0);
+  \node[font=\tiny,text=slate,anchor=north west,align=left] at (4.95,-0.99)
+    {63 test-test pairs with $|\Delta\text{pIC}_{50}|\geq$\,1.0\\Dashed line = 50\% chance};
+  \begin{scope}[shift={(5.32,-3.70)}]
+    \draw[greyline,line width=0.4pt] (0,0) -- (3.75,0);
     \foreach \v in {0,0.25,0.5,0.75,1.0} {
-      \draw[greyline,line width=0.3pt] (0,\v*4.0) -- (4.2,\v*4.0);
-      \node[font=\tiny,text=slate,anchor=east] at (-0.05,\v*4.0) {\v};
+      \draw[greyline,line width=0.3pt] (0,\v*2.05) -- (3.75,\v*2.05);
+      \node[font=\tiny,text=slate,anchor=east] at (-0.05,\v*2.05) {\v};
     }
-    % CliffForge 0.968
-    \fill[teal]       (0.25,0) rectangle (1.2,  0.968*4.0);
-    \node[font=\footnotesize\bfseries,text=navy,anchor=south] at (0.725, 0.968*4.0) {96.8\%};
-    \node[lbl,anchor=north] at (0.725,-0.05) {CliffForge};
-    % ChemProp 0.810
-    \fill[slatemid]   (1.5,0)  rectangle (2.45, 0.810*4.0);
-    \node[font=\footnotesize\bfseries,text=navy,anchor=south] at (1.975, 0.810*4.0) {81.0\%};
-    \node[lbl,anchor=north] at (1.975,-0.05) {ChemProp};
-    % 5-NN 0.683
-    \fill[slatemid!55] (2.75,0) rectangle (3.7,  0.683*4.0);
-    \node[font=\footnotesize\bfseries,text=navy,anchor=south] at (3.225, 0.683*4.0) {68.3\%};
-    \node[lbl,anchor=north] at (3.225,-0.05) {5-NN};
-    % chance line
-    \draw[amber,dashed,line width=0.8pt] (-0.1,0.5*4.0) -- (4.3,0.5*4.0);
-    \node[font=\tiny,text=amber,anchor=west] at (4.35,0.5*4.0) {chance};
-    \node[font=\tiny\itshape,text=slate,anchor=north] at (2.0,-0.55) {Direction accuracy};
+    \fill[teal] (0.22,0) rectangle (1.02,0.968*2.05);
+    \fill[slatemid] (1.42,0) rectangle (2.22,0.810*2.05);
+    \fill[slatemid!55] (2.62,0) rectangle (3.42,0.683*2.05);
+    \draw[amber,dashed,line width=0.8pt] (0,0.5*2.05) -- (3.75,0.5*2.05);
+    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (0.62,0.968*2.05) {96.8\%};
+    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (1.82,0.810*2.05) {81.0\%};
+    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (3.02,0.683*2.05) {68.3\%};
+    \node[lbl,anchor=north] at (0.62,-0.06) {CliffForge};
+    \node[lbl,anchor=north] at (1.82,-0.06) {ChemProp};
+    \node[lbl,anchor=north] at (3.02,-0.06) {5-NN};
   \end{scope}
+  \node[font=\tiny\bfseries,text=teal,anchor=north west] at (5.05,-4.16)
+    {CliffForge: +16 pp vs.\ ChemProp};
 
-  % -------- divider
-  \draw[greyline,line width=0.4pt] (9.7,-0.5) -- (9.7,-4.6);
-
-  % -------- PANEL C: within-series ranking
-  \node[font=\fontsize{7.6}{9}\selectfont\bfseries,text=teal,anchor=north west] at (9.9,-0.5)
+  % C: within-series ranking.
+  \node[font=\fontsize{7.6}{9}\selectfont\bfseries,text=teal,anchor=north west] at (9.77,-0.61)
     {C \;\; Within-series ranking};
-  \node[font=\tiny,text=slate,anchor=north west] at (9.9,-0.9)
-    {mean Spearman $\rho$, 12 held-out series};
-
-  \begin{scope}[shift={(10.4,-3.6)}]
-    \draw[greyline,line width=0.4pt] (0,0) -- (3.6,0);
+  \node[font=\tiny,text=slate,anchor=north west,align=left] at (9.77,-0.99)
+    {Mean Spearman $\rho$\\12 held-out series};
+  \begin{scope}[shift={(10.15,-3.70)}]
+    \draw[greyline,line width=0.4pt] (0,0) -- (3.75,0);
     \foreach \v in {0,0.1,0.2,0.3,0.4} {
-      \draw[greyline,line width=0.3pt] (0,\v*7.5) -- (3.6,\v*7.5);
-      \node[font=\tiny,text=slate,anchor=east] at (-0.05,\v*7.5) {\v};
+      \draw[greyline,line width=0.3pt] (0,\v*5.10) -- (3.75,\v*5.10);
+      \node[font=\tiny,text=slate,anchor=east] at (-0.05,\v*5.10) {\v};
     }
-    \fill[teal]        (0.25,0) rectangle (1.1,  0.311*7.5);
-    \node[font=\footnotesize\bfseries,text=navy,anchor=south] at (0.675, 0.311*7.5) {0.311};
-    \node[lbl,anchor=north] at (0.675,-0.05) {CliffForge};
-    \fill[slatemid]    (1.4,0)  rectangle (2.25, 0.304*7.5);
-    \node[font=\footnotesize\bfseries,text=navy,anchor=south] at (1.825, 0.304*7.5) {0.304};
-    \node[lbl,anchor=north] at (1.825,-0.05) {ChemProp};
-    \fill[slatemid!55] (2.55,0) rectangle (3.4,  0.222*7.5);
-    \node[font=\footnotesize\bfseries,text=navy,anchor=south] at (2.975, 0.222*7.5) {0.222};
-    \node[lbl,anchor=north] at (2.975,-0.05) {5-NN};
-    \node[font=\tiny\itshape,text=slate,anchor=north] at (1.8,-0.55) {Spearman $\rho$};
+    \fill[teal] (0.22,0) rectangle (1.02,0.311*5.10);
+    \fill[slatemid] (1.42,0) rectangle (2.22,0.304*5.10);
+    \fill[slatemid!55] (2.62,0) rectangle (3.42,0.222*5.10);
+    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (0.62,0.311*5.10) {0.311};
+    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (1.82,0.304*5.10) {0.304};
+    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (3.02,0.222*5.10) {0.222};
+    \node[lbl,anchor=north] at (0.62,-0.06) {CliffForge};
+    \node[lbl,anchor=north] at (1.82,-0.06) {ChemProp};
+    \node[lbl,anchor=north] at (3.02,-0.06) {5-NN};
   \end{scope}
+  \node[font=\tiny\bfseries,text=teal,anchor=north west] at (9.90,-4.16)
+    {CliffForge: 0.311 vs.\ ChemProp: 0.304};
 
-  % -------- takeaway strip
-  \fill[teallight] (0,-4.65) rectangle (14.38,-5.2);
-  \node[font=\scriptsize,text=navy,anchor=west,text width=13.9cm] at (0.15,-4.92)
-    {\textbf{Key finding:} On 25 lead-opt cliff pairs, CliffForge (F1\,=\,0.634, Prec\,=\,81\%) is the \textbf{only model that detects any activity cliffs}---ChemProp and 5-NN F1\,=\,0.
-     On cliff-scale pairs CliffForge direction accuracy (96.8\%) exceeds ChemProp (81.0\%) by \textbf{+16 pp}. Setting A (2 strict cliffs): CliffForge AP\,=\,1.00 vs.\ ChemProp\,=\,0.08.};
+  % Takeaway has enough height for its full text.
+  \fill[teallight] (0,-4.50) rectangle (14.38,-5.36);
+  \node[font=\scriptsize,text=navy,anchor=north west,text width=13.95cm,align=left] at (0.15,-4.57)
+    {\textbf{Key finding:} In Setting B, CliffForge detects 13/25 cliffs (F1\,=\,0.634, precision\,=\,81\%); ChemProp and 5-NN detect none (F1\,=\,0).\\
+     Direction accuracy: 96.8\% vs.\ ChemProp 81.0\% (\textbf{+16 pp}). Setting A (2 strict cliffs): AP 1.00 vs.\ 0.08 (CliffForge vs.\ ChemProp).};
 \end{tikzpicture}
 \vfill
 \src{Data: \parencite{boby2023moonshot,dablander2023qsar}; 1{,}924 molecules, 12{,}594 MMPs; results in \texttt{results/summary\_mmp.json}. ChemProp 2.x (D-MPNN depth=3, 60 epochs). All evaluations are strictly held-out.}
 \end{frame}
 
-% ============================================================== SLIDE 6 - impact and next steps
+% ============================================================== SLIDE 7 - impact and next steps
 \begin{frame}{Impact, Sustainability \& Next Steps}
 \begin{columns}[T,totalwidth=\textwidth]
 \column{0.47\textwidth}

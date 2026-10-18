@@ -228,7 +228,7 @@ TELEMEDICON26/
 ├── models/              README with expected checkpoint names and settings (no weights committed)
 ├── examples/            reference seed ligand and usage
 ├── results/             frozen reference metrics (JSON/CSV), summary.json, figures
-└── presentation/        six-slide Beamer/TikZ deck (main.tex, references.bib, compiled PDF, build.sh)
+└── presentation/        seven-slide Beamer/TikZ deck (main.tex, references.bib, compiled PDF, build.sh)
 ```
 
 License: MIT (code). Third-party data and libraries retain their own licenses.

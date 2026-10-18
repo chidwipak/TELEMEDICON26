@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the six-slide Beamer deck -> TELEMEDICON26_CliffForge_Pitch.pdf (works from any directory).
+# Build the seven-slide Beamer deck -> TELEMEDICON26_CliffForge_Pitch.pdf (works from any directory).
 # Needs: pdflatex + biber + latexmk with the beamer, biblatex, pgf/tikz packages (TeX Live / TinyTeX).
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

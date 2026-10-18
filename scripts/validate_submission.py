@@ -6,7 +6,7 @@ Checks (exit code 0 only if every check passes):
   2. no secrets, no private absolute paths, no data/weights/large files in the tracked tree
   3. reference results are internally consistent (summary.json vs metrics files)
   4. headline numbers in README.md and presentation/main.tex agree with the reference results
-  5. the compiled deck has exactly six pages
+  5. the compiled deck has exactly seven pages
   6. package modules compile and the unit tests pass (weight/data tests are skipped when resources are absent)
 
 Usage:  python scripts/validate_submission.py [--skip-tests] [--skip-pdf]
@@ -162,7 +162,7 @@ def main():
             if n_pages is None:
                 print("[SKIP] compiled deck page count (install poppler-utils for `pdfinfo`, or pip install pypdf)")
             else:
-                check("compiled deck has exactly six pages", n_pages == 6, f"found {n_pages}")
+                check("compiled deck has exactly seven pages", n_pages == 7, f"found {n_pages}")
         else:
             check("compiled deck present", False, str(pdf))
 
