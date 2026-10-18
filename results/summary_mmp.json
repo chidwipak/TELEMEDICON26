@@ -1,0 +1,111 @@
+{
+  "dataset": "Dablander MMP Moonshot Mpro",
+  "n_molecules": 1924,
+  "n_train": 1582,
+  "n_test": 181,
+  "n_train_mmp_pairs": 9323,
+  "cliff_definition": {
+    "tanimoto": 0.8,
+    "abs_delta_pIC50": 1.0
+  },
+  "cliff_detection": {
+    "setting_A_strict": {
+      "description": "Both molecules held out (test-test), Tanimoto>=0.80",
+      "n_close_pairs": 39,
+      "n_cliffs": 2,
+      "models": {
+        "CliffForge_siamese": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "ap": 1.0,
+          "roc_auc": 1.0
+        },
+        "ChemProp_abs": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "ap": 0.08116883116883117,
+          "roc_auc": 0.5135135135135135
+        },
+        "kNN_5nn": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "ap": 0.09555555555555556,
+          "roc_auc": 0.5810810810810811
+        }
+      }
+    },
+    "setting_B_lead_opt": {
+      "description": "Test molecule vs. measured training reference (test-train), Tanimoto>=0.80",
+      "n_close_pairs": 223,
+      "n_cliffs": 25,
+      "models": {
+        "CliffForge_siamese": {
+          "tp": 13,
+          "fp": 3,
+          "fn": 12,
+          "precision": 0.8125,
+          "recall": 0.52,
+          "f1": 0.6341463414634146,
+          "ap": 0.6830303899484917,
+          "roc_auc": 0.8793939393939394
+        },
+        "ChemProp_abs": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 25,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "ap": 0.18270404526891076,
+          "roc_auc": 0.6373737373737374
+        },
+        "kNN_5nn": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 25,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "ap": 0.12716631150546034,
+          "roc_auc": 0.5571717171717171
+        }
+      }
+    }
+  },
+  "direction_accuracy": {
+    "test_test_all": {
+      "n": 334,
+      "CliffForge_siamese": 0.7155688622754491,
+      "ChemProp_abs": 0.6497005988023952,
+      "kNN_5nn": 0.5958083832335329
+    },
+    "test_test_cliff_pairs": {
+      "n": 63,
+      "CliffForge_siamese": 0.9682539682539683,
+      "ChemProp_abs": 0.8095238095238095,
+      "kNN_5nn": 0.6825396825396826
+    }
+  },
+  "within_series_spearman": {
+    "n_series": 12,
+    "CliffForge_siamese": 0.3111010048407042,
+    "ChemProp_abs": 0.30379378759364806,
+    "kNN_5nn": 0.2224340931885965
+  },
+  "chemprop_regression": {
+    "test_rmse_pIC50": 0.5255230799520375,
+    "test_pearson_r": 0.8364537047099452
+  }
+}
