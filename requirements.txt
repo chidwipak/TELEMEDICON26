@@ -1,0 +1,12 @@
+# Tested environment: Python 3.9.25, Linux x86_64 (CPU inference/evaluation; no GPU required).
+# Versions below are the exact ones used for the reported results. Newer versions may work but were not tested.
+numpy==1.23.5
+scipy==1.9.3
+pandas==1.5.3
+scikit-learn==1.1.3
+torch==1.12.1            # CPU or CUDA build; use the wheel that matches your platform (https://pytorch.org)
+torch-geometric==2.3.1
+chemprop==1.6.1          # ChemProp absolute-affinity baseline (CLI: chemprop_predict / chemprop_train)
+rdkit-pypi==2022.9.5     # conda alternative (recommended): conda install -c conda-forge rdkit=2022.09.5
+# optional
+matplotlib==3.7.5        # only needed if you want to re-draw figures

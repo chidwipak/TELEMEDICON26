@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use CliffForge, please cite it as below."
+title: "CliffForge: Relative-Affinity Molecular Analogue Prioritization and Activity-Cliff Analysis"
+type: software
+version: "0.1.0"
+date-released: "2026-10-18"
+license: MIT
+repository-code: "https://github.com/chidwipak/TELEMEDICON26"
+abstract: >-
+  CliffForge is an early-stage research prototype for small-molecule lead optimization. It combines
+  training-derived matched-molecular-pair analogue generation with a Siamese relative-affinity model,
+  uncertainty-aware ranking and activity-cliff analysis, evaluated retrospectively on COVID Moonshot
+  SARS-CoV-2 Mpro data. Submitted to the TELEMEDICON26 hackathon by Team Genesis.
+keywords:
+  - activity cliffs
+  - lead optimization
+  - relative binding affinity
+  - matched molecular pairs
+  - SARS-CoV-2 main protease
+authors:
+  - family-names: "Kuppani"
+    given-names: "Chidwipak"
+  - family-names: "Kurapati"
+    given-names: "Hrishikesh"

@@ -1,0 +1,55 @@
+# --- data (not redistributed; see data/README.md) ---
+data/raw/*
+data/moonshot/*
+data/**/*.csv
+!data/README.md
+!data/**/.gitkeep
+
+# --- model weights / checkpoints (not bundled; see models/README.md) ---
+models/*
+!models/README.md
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.npz
+
+# --- generated outputs, logs, caches ---
+outputs/
+logs/
+*.log
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.cache/
+
+# --- environments / editors / OS ---
+.venv/
+venv/
+env/
+.env
+.env.*
+*.key
+*.pem
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# --- LaTeX build artifacts (the compiled PDF in presentation/ IS tracked) ---
+presentation/build/
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.vrb
+*.synctex.gz
+*.run.xml
+*-blx.bib

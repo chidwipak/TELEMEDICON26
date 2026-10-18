@@ -1,0 +1,1732 @@
+{
+  "project": "CliffForge proof of concept (prototype; NOT a validated drug-discovery system)",
+  "generated_utc": "2026-10-18T15:08Z",
+  "software": {
+    "python": "3.9.25",
+    "rdkit": "2022.09.5",
+    "torch": "1.12.1+cu113",
+    "chemprop": "1.6.1",
+    "numpy": "1.23.5",
+    "scipy": "1.9.3",
+    "pandas": "1.5.3",
+    "torch_geometric": "2.3.1"
+  },
+  "compute": "CPU only (low priority); no GPU used",
+  "dataset": {
+    "name": "COVID Moonshot noncovalent SARS-CoV-2 Mpro IC50 (pIC50 = 6 - log10 IC50[uM])",
+    "raw": "data/raw/cdd_noncovalent_dates_2023_10_18_filt.csv",
+    "curated": "data/moonshot/all.csv (src/cliffforge/data_prep.py, SEED=17, within-series split, replicates averaged, 2D / stereochemistry removed)",
+    "n_molecules": 1102,
+    "n_train": 961,
+    "n_test": 141,
+    "validation_set": "none separate; ChemProp used an internal random val split of train; relative model used fixed 70 epochs with no early stopping / tuning on test",
+    "assay_noise_sd_pIC50": 0.396
+  },
+  "models": {
+    "chemprop_abs": {
+      "checkpoint": "models/chemprop_moonshot/fold_0/model_0/model.pt",
+      "provenance": "existing (internship); absolute pIC50; trained on data/moonshot/train.csv",
+      "reproduced_saved_predictions_max_abs_diff": 3.052176742457391e-07
+    },
+    "rel_siamese": {
+      "checkpoints": [
+        "models/rel_siamese_s0.pt",
+        "models/rel_siamese_s1.pt",
+        "models/rel_siamese_s2.pt"
+      ],
+      "provenance": "NEW in this PoC (src/cliffforge/relmodel.py; recipe of moonshot_ddg.py (internship research repository)), seeds 0,1,2, 70 epochs, train partition pairs only (4578 pairs)",
+      "prediction": "antisymmetrised pairwise delta, mean over checkpoints"
+    },
+    "knn_sim": "similarity-weighted 5-NN on TRAIN labels (non-learning baseline)",
+    "fep_checkpoints_used_for_moonshot": false
+  },
+  "seeds": {
+    "cliff_bootstrap": 0,
+    "relative_model_training": [
+      0,
+      1,
+      2
+    ],
+    "moonshot_split": 17
+  },
+  "activity_cliff": {
+    "thresholds": {
+      "primary": {
+        "tanimoto": 0.8,
+        "abs_delta_pIC50": 1.0
+      },
+      "sensitivity_tanimoto": [
+        0.6,
+        0.7,
+        0.8
+      ],
+      "fingerprint": "Morgan r=2, 2048 bits",
+      "assay_noise_sd_pIC50": 0.396
+    },
+    "n_pairs_by_similarity_all_1102_molecules": {
+      "0.6": 12601,
+      "0.7": 4030,
+      "0.8": 684
+    },
+    "primary_cliff_counts": {
+      "all": 46,
+      "test_test": 5,
+      "test_train": 14,
+      "train_train": 27
+    },
+    "sensitivity_cliff_counts": {
+      "sim>=0.6|d>=1.0": {
+        "all": 2061,
+        "test_test": 60,
+        "test_train": 520,
+        "train_train": 1481
+      },
+      "sim>=0.7|d>=1.0": {
+        "all": 489,
+        "test_test": 18,
+        "test_train": 127,
+        "train_train": 344
+      },
+      "sim>=0.8|d>=1.0": {
+        "all": 46,
+        "test_test": 5,
+        "test_train": 14,
+        "train_train": 27
+      },
+      "sim>=0.9|d>=1.0": {
+        "all": 2,
+        "test_test": 0,
+        "test_train": 0,
+        "train_train": 2
+      }
+    },
+    "strict_heldout_primary_(test_test,sim>=0.8,|d|>=1)": {
+      "chemprop_abs": {
+        "n": 5,
+        "n_correct": 4.0,
+        "direction_accuracy": 0.8,
+        "ci95_pair_bootstrap": [
+          0.4,
+          1.0
+        ],
+        "binom_p_vs_0.5": 0.375
+      },
+      "rel_siamese": {
+        "n": 5,
+        "n_correct": 4.0,
+        "direction_accuracy": 0.8,
+        "ci95_pair_bootstrap": [
+          0.4,
+          1.0
+        ],
+        "binom_p_vs_0.5": 0.375
+      },
+      "knn_sim": {
+        "n": 5,
+        "n_correct": 5.0,
+        "direction_accuracy": 1.0,
+        "ci95_pair_bootstrap": [
+          1.0,
+          1.0
+        ],
+        "binom_p_vs_0.5": 0.0625
+      },
+      "heavy_atoms": {
+        "n": 5,
+        "n_correct": 3.0,
+        "direction_accuracy": 0.6,
+        "ci95_pair_bootstrap": [
+          0.3,
+          0.9
+        ],
+        "binom_p_vs_0.5": 1.0
+      },
+      "n_pairs": 5,
+      "mcnemar_rel_vs_chemprop": {
+        "n_compared": 5,
+        "rel_only_correct": 0,
+        "chemprop_only_correct": 0,
+        "p_two_sided": null
+      }
+    },
+    "strict_heldout_sensitivity_sim>=0.7": {
+      "chemprop_abs": {
+        "n": 18,
+        "n_correct": 17.0,
+        "direction_accuracy": 0.9444444444444444,
+        "ci95_pair_bootstrap": [
+          0.8333333333333334,
+          1.0
+        ],
+        "binom_p_vs_0.5": 0.00014495849609375
+      },
+      "rel_siamese": {
+        "n": 18,
+        "n_correct": 15.0,
+        "direction_accuracy": 0.8333333333333334,
+        "ci95_pair_bootstrap": [
+          0.6666666666666666,
+          1.0
+        ],
+        "binom_p_vs_0.5": 0.007537841796875
+      },
+      "knn_sim": {
+        "n": 18,
+        "n_correct": 17.0,
+        "direction_accuracy": 0.9444444444444444,
+        "ci95_pair_bootstrap": [
+          0.8333333333333334,
+          1.0
+        ],
+        "binom_p_vs_0.5": 0.00014495849609375
+      },
+      "heavy_atoms": {
+        "n": 18,
+        "n_correct": 12.5,
+        "direction_accuracy": 0.6944444444444444,
+        "ci95_pair_bootstrap": [
+          0.4722222222222222,
+          0.8611111111111112
+        ],
+        "binom_p_vs_0.5": 0.237884521484375
+      },
+      "n_pairs": 18,
+      "mcnemar_rel_vs_chemprop": {
+        "n_compared": 18,
+        "rel_only_correct": 0,
+        "chemprop_only_correct": 2,
+        "p_two_sided": 0.5
+      }
+    },
+    "strict_heldout_sensitivity_sim>=0.6": {
+      "chemprop_abs": {
+        "n": 60,
+        "n_correct": 58.0,
+        "direction_accuracy": 0.9666666666666667,
+        "ci95_pair_bootstrap": [
+          0.9166666666666666,
+          1.0
+        ],
+        "binom_p_vs_0.5": 3.1762786845135338e-15
+      },
+      "rel_siamese": {
+        "n": 60,
+        "n_correct": 55.0,
+        "direction_accuracy": 0.9166666666666666,
+        "ci95_pair_bootstrap": [
+          0.85,
+          0.9833333333333333
+        ],
+        "binom_p_vs_0.5": 1.0382663478969434e-11
+      },
+      "knn_sim": {
+        "n": 60,
+        "n_correct": 57.0,
+        "direction_accuracy": 0.95,
+        "ci95_pair_bootstrap": [
+          0.8833333333333333,
+          1.0
+        ],
+        "binom_p_vs_0.5": 6.253851603243987e-14
+      },
+      "heavy_atoms": {
+        "n": 60,
+        "n_correct": 45.0,
+        "direction_accuracy": 0.75,
+        "ci95_pair_bootstrap": [
+          0.65,
+          0.8416666666666667
+        ],
+        "binom_p_vs_0.5": 0.00013451408092849532
+      },
+      "n_pairs": 60,
+      "mcnemar_rel_vs_chemprop": {
+        "n_compared": 60,
+        "rel_only_correct": 1,
+        "chemprop_only_correct": 4,
+        "p_two_sided": 0.375
+      }
+    },
+    "strict_heldout_close_analogues_sim>=0.8_all_delta": {
+      "chemprop_abs": {
+        "n": 44,
+        "n_correct": 23.0,
+        "direction_accuracy": 0.5227272727272727,
+        "ci95_pair_bootstrap": [
+          0.36363636363636365,
+          0.6590909090909091
+        ],
+        "binom_p_vs_0.5": 0.880395821280672
+      },
+      "rel_siamese": {
+        "n": 44,
+        "n_correct": 29.0,
+        "direction_accuracy": 0.6590909090909091,
+        "ci95_pair_bootstrap": [
+          0.5227272727272727,
+          0.7954545454545454
+        ],
+        "binom_p_vs_0.5": 0.048766765904474596
+      },
+      "knn_sim": {
+        "n": 44,
+        "n_correct": 24.5,
+        "direction_accuracy": 0.5568181818181818,
+        "ci95_pair_bootstrap": [
+          0.4090909090909091,
+          0.7045454545454546
+        ],
+        "binom_p_vs_0.5": 0.651587827208914
+      },
+      "heavy_atoms": {
+        "n": 44,
+        "n_correct": 23.5,
+        "direction_accuracy": 0.5340909090909091,
+        "ci95_pair_bootstrap": [
+          0.42045454545454547,
+          0.6590909090909091
+        ],
+        "binom_p_vs_0.5": 0.651587827208914
+      },
+      "n_pairs": 44,
+      "mcnemar_rel_vs_chemprop": {
+        "n_compared": 44,
+        "rel_only_correct": 10,
+        "chemprop_only_correct": 4,
+        "p_two_sided": 0.1795654296875
+      }
+    },
+    "exploratory_test_train_primary_cliff": {
+      "chemprop_abs": {
+        "n": 14,
+        "n_correct": 13.0,
+        "direction_accuracy": 0.9285714285714286,
+        "ci95_pair_bootstrap": [
+          0.7857142857142857,
+          1.0
+        ],
+        "binom_p_vs_0.5": 0.0018310546875
+      },
+      "rel_siamese": {
+        "n": 14,
+        "n_correct": 13.0,
+        "direction_accuracy": 0.9285714285714286,
+        "ci95_pair_bootstrap": [
+          0.7857142857142857,
+          1.0
+        ],
+        "binom_p_vs_0.5": 0.0018310546875
+      },
+      "knn_sim": {
+        "n": 14,
+        "n_correct": 8.0,
+        "direction_accuracy": 0.5714285714285714,
+        "ci95_pair_bootstrap": [
+          0.2857142857142857,
+          0.7857142857142857
+        ],
+        "binom_p_vs_0.5": 0.79052734375
+      },
+      "heavy_atoms": {
+        "n": 14,
+        "n_correct": 5.0,
+        "direction_accuracy": 0.35714285714285715,
+        "ci95_pair_bootstrap": [
+          0.14285714285714285,
+          0.6428571428571429
+        ],
+        "binom_p_vs_0.5": 0.4239501953125
+      },
+      "n_pairs": 14,
+      "mcnemar_rel_vs_chemprop": {
+        "n_compared": 14,
+        "rel_only_correct": 0,
+        "chemprop_only_correct": 0,
+        "p_two_sided": null
+      }
+    },
+    "exploratory_test_train_sim>=0.7_cliff": {
+      "chemprop_abs": {
+        "n": 127,
+        "n_correct": 98.0,
+        "direction_accuracy": 0.7716535433070866,
+        "ci95_pair_bootstrap": [
+          0.6929133858267716,
+          0.84251968503937
+        ],
+        "binom_p_vs_0.5": 5.966212469680181e-10
+      },
+      "rel_siamese": {
+        "n": 127,
+        "n_correct": 111.0,
+        "direction_accuracy": 0.8740157480314961,
+        "ci95_pair_bootstrap": [
+          0.8188976377952756,
+          0.9291338582677166
+        ],
+        "binom_p_vs_0.5": 1.1179658505994965e-18
+      },
+      "knn_sim": {
+        "n": 127,
+        "n_correct": 91.0,
+        "direction_accuracy": 0.7165354330708661,
+        "ci95_pair_bootstrap": [
+          0.6377952755905512,
+          0.7952755905511811
+        ],
+        "binom_p_vs_0.5": 1.1402294032528225e-06
+      },
+      "heavy_atoms": {
+        "n": 127,
+        "n_correct": 73.0,
+        "direction_accuracy": 0.5748031496062992,
+        "ci95_pair_bootstrap": [
+          0.4921259842519685,
+          0.65748031496063
+        ],
+        "binom_p_vs_0.5": 0.10984950256605942
+      },
+      "n_pairs": 127,
+      "mcnemar_rel_vs_chemprop": {
+        "n_compared": 127,
+        "rel_only_correct": 18,
+        "chemprop_only_correct": 5,
+        "p_two_sided": 0.010622024536132812
+      }
+    },
+    "exploratory_test_train_close_analogues_sim>=0.8_all_delta": {
+      "chemprop_abs": {
+        "n": 219,
+        "n_correct": 132.0,
+        "direction_accuracy": 0.6027397260273972,
+        "ci95_pair_bootstrap": [
+          0.5342465753424658,
+          0.6621004566210046
+        ],
+        "binom_p_vs_0.5": 0.0028614401474425562
+      },
+      "rel_siamese": {
+        "n": 219,
+        "n_correct": 163.0,
+        "direction_accuracy": 0.7442922374429224,
+        "ci95_pair_bootstrap": [
+          0.684931506849315,
+          0.7990867579908676
+        ],
+        "binom_p_vs_0.5": 2.609844509529413e-13
+      },
+      "knn_sim": {
+        "n": 219,
+        "n_correct": 100.0,
+        "direction_accuracy": 0.45662100456621,
+        "ci95_pair_bootstrap": [
+          0.3926940639269406,
+          0.5205479452054794
+        ],
+        "binom_p_vs_0.5": 0.22377658364650518
+      },
+      "heavy_atoms": {
+        "n": 219,
+        "n_correct": 123.0,
+        "direction_accuracy": 0.5616438356164384,
+        "ci95_pair_bootstrap": [
+          0.5045091324200914,
+          0.6187214611872146
+        ],
+        "binom_p_vs_0.5": 0.07869373377196462
+      },
+      "n_pairs": 219,
+      "mcnemar_rel_vs_chemprop": {
+        "n_compared": 219,
+        "rel_only_correct": 48,
+        "chemprop_only_correct": 17,
+        "p_two_sided": 0.00015210657584807538
+      }
+    },
+    "within_series_test": {
+      "chemprop_abs": {
+        "n_series": 12,
+        "mean_spearman": 0.1919713193195167
+      },
+      "rel_anchored_ensemble": {
+        "n_series": 12,
+        "mean_spearman": 0.5805829369871115
+      },
+      "rel_anchored_seed0": {
+        "n_series": 12,
+        "mean_spearman": 0.5339162668977661
+      },
+      "rel_anchored_seed1": {
+        "n_series": 12,
+        "mean_spearman": 0.5293140215519248
+      },
+      "rel_anchored_seed2": {
+        "n_series": 12,
+        "mean_spearman": 0.586473743945281
+      },
+      "paired_wilcoxon_rel_ensemble_vs_chemprop": {
+        "n_series": 12,
+        "mean_diff": 0.3886116176675949,
+        "p": 0.0048828125
+      }
+    },
+    "global_test_spearman": {
+      "chemprop_abs_global_spearman_test": 0.7769894740333113,
+      "rel_anchored_global_spearman_test": 0.8431249364655612
+    },
+    "full_detail": "results/metrics/activity_cliff_metrics.json; per-pair: activity_cliff_pairs.csv"
+  },
+  "generation": {
+    "method": "example-based matched-molecular-pair transformation transfer (RDKit); NOT a neural generator",
+    "params": {
+      "max_side_heavy_atoms": 12,
+      "min_scaffold_fraction": 0.6,
+      "max_edit_size_heavy_atoms": 16,
+      "min_precedent_pairs": 2,
+      "min_parent_tanimoto": 0.5,
+      "max_heavy_atom_growth": 8,
+      "max_sa_score": 6.0,
+      "allowed_elements": "C,N,O,F,Cl,Br,S",
+      "fingerprint": "Morgan radius 2, 2048 bits"
+    },
+    "seed": {
+      "id": "moonshot_idx237",
+      "smiles": "CNC(=O)CN1CC(C(=O)Nc2cncc3ccc(NS(C)(=O)=O)cc23)c2cc(Cl)ccc2C1=O",
+      "partition": "test",
+      "measured_pIC50": 7.1774,
+      "postera_ids": [
+        "MAT-POS-2e8b2191-11"
+      ],
+      "all_csv_row": 237
+    },
+    "seed_selection_rule": "held-out test compounds with pIC50>=7.0; max #filter-passing candidates (outcome-blind); table: results/metrics/seed_selection_table.csv",
+    "funnel": {
+      "generated_edits": 324,
+      "valid_rdkit": 324,
+      "unique_non_parent": 231,
+      "pass_all_filters": 34,
+      "scored_by_model": 34
+    },
+    "n_ranked_candidates": 34,
+    "predicted_delta_pIC50_vs_seed_range": [
+      -0.6899,
+      0.1753
+    ],
+    "n_predicted_cliff_alerts": 0,
+    "n_candidates_known_in_moonshot": 2,
+    "reject_reasons_all_edits": {
+      "precedent<2": 266,
+      "duplicate": 93,
+      "heavy_atom_growth": 38,
+      "PASS": 34
+    },
+    "retrospective_demo_seed": {
+      "n_recovered_heldout_measured_analogues": 1,
+      "n_pass_filters": 0,
+      "direction_accuracy": 1.0
+    }
+  },
+  "generation_recall_heldout": {
+    "n_test_seeds": 141,
+    "n_reachable_test_test_single_edit_pairs": 316,
+    "n_recovered_pairs": 82,
+    "recall": 0.25949367088607594,
+    "direction_accuracy": {
+      "all_recovered": {
+        "n_pairs": 82,
+        "rel_siamese": {
+          "n": 82,
+          "n_correct": 53,
+          "direction_accuracy": 0.6463414634146342,
+          "ci95_pair_bootstrap": [
+            0.5487804878048781,
+            0.7439024390243902
+          ],
+          "binom_p_vs_0.5": 0.010637487878147722
+        },
+        "chemprop_abs": {
+          "n": 82,
+          "n_correct": 47,
+          "direction_accuracy": 0.573170731707317,
+          "ci95_pair_bootstrap": [
+            0.4634146341463415,
+            0.6829268292682927
+          ],
+          "binom_p_vs_0.5": 0.22424452830608183
+        },
+        "precedent_prior": {
+          "n": 82,
+          "n_correct": 42,
+          "direction_accuracy": 0.5121951219512195,
+          "ci95_pair_bootstrap": [
+            0.4024390243902439,
+            0.6219512195121951
+          ],
+          "binom_p_vs_0.5": 0.9121566075526034
+        }
+      },
+      "precedent>=2 (default generator filter)": {
+        "n_pairs": 33,
+        "rel_siamese": {
+          "n": 33,
+          "n_correct": 23,
+          "direction_accuracy": 0.696969696969697,
+          "ci95_pair_bootstrap": [
+            0.5454545454545454,
+            0.8484848484848485
+          ],
+          "binom_p_vs_0.5": 0.03508203336969018
+        },
+        "chemprop_abs": {
+          "n": 33,
+          "n_correct": 19,
+          "direction_accuracy": 0.5757575757575758,
+          "ci95_pair_bootstrap": [
+            0.3939393939393939,
+            0.7272727272727273
+          ],
+          "binom_p_vs_0.5": 0.48685024166479707
+        },
+        "precedent_prior": {
+          "n": 33,
+          "n_correct": 21,
+          "direction_accuracy": 0.6363636363636364,
+          "ci95_pair_bootstrap": [
+            0.48484848484848486,
+            0.7878787878787878
+          ],
+          "binom_p_vs_0.5": 0.16275565745308995
+        }
+      },
+      "|true delta|>=0.4 (above assay noise)": {
+        "n_pairs": 24,
+        "rel_siamese": {
+          "n": 24,
+          "n_correct": 18,
+          "direction_accuracy": 0.75,
+          "ci95_pair_bootstrap": [
+            0.5833333333333334,
+            0.9166666666666666
+          ],
+          "binom_p_vs_0.5": 0.022655844688415527
+        },
+        "chemprop_abs": {
+          "n": 24,
+          "n_correct": 14,
+          "direction_accuracy": 0.5833333333333334,
+          "ci95_pair_bootstrap": [
+            0.375,
+            0.7916666666666666
+          ],
+          "binom_p_vs_0.5": 0.5412561893463135
+        },
+        "precedent_prior": {
+          "n": 24,
+          "n_correct": 13,
+          "direction_accuracy": 0.5416666666666666,
+          "ci95_pair_bootstrap": [
+            0.3333333333333333,
+            0.75
+          ],
+          "binom_p_vs_0.5": 0.8388197422027588
+        }
+      },
+      "|true delta|>=1.0 (cliff-size)": {
+        "n_pairs": 1,
+        "rel_siamese": {
+          "n": 1,
+          "n_correct": 1,
+          "direction_accuracy": 1.0,
+          "ci95_pair_bootstrap": [
+            1.0,
+            1.0
+          ],
+          "binom_p_vs_0.5": 1.0
+        },
+        "chemprop_abs": {
+          "n": 1,
+          "n_correct": 1,
+          "direction_accuracy": 1.0,
+          "ci95_pair_bootstrap": [
+            1.0,
+            1.0
+          ],
+          "binom_p_vs_0.5": 1.0
+        },
+        "precedent_prior": {
+          "n": 1,
+          "n_correct": 1,
+          "direction_accuracy": 1.0,
+          "ci95_pair_bootstrap": [
+            1.0,
+            1.0
+          ],
+          "binom_p_vs_0.5": 1.0
+        }
+      },
+      "same_series": {
+        "n_pairs": 69,
+        "rel_siamese": {
+          "n": 69,
+          "n_correct": 43,
+          "direction_accuracy": 0.6231884057971014,
+          "ci95_pair_bootstrap": [
+            0.4927536231884058,
+            0.7391304347826086
+          ],
+          "binom_p_vs_0.5": 0.05328936381651365
+        },
+        "chemprop_abs": {
+          "n": 69,
+          "n_correct": 37,
+          "direction_accuracy": 0.5362318840579711,
+          "ci95_pair_bootstrap": [
+            0.42028985507246375,
+            0.6521739130434783
+          ],
+          "binom_p_vs_0.5": 0.6304564917867981
+        },
+        "precedent_prior": {
+          "n": 69,
+          "n_correct": 38,
+          "direction_accuracy": 0.5507246376811594,
+          "ci95_pair_bootstrap": [
+            0.4344202898550725,
+            0.6666666666666666
+          ],
+          "binom_p_vs_0.5": 0.47036853185814453
+        }
+      }
+    }
+  },
+  "docking": {
+    "ran": false,
+    "reason": "no docking software (vina/smina/gnina/obabel/meeko) installed and no Mpro structure in repo; not installed/downloaded because of the deadline and shared-host constraints"
+  },
+  "endpoint_specific_affinity_predictions_obtained": true,
+  "affinity_prediction_notes": "model-predicted delta pIC50 vs seed on Moonshot Mpro (2D, no pocket); not measured, not docking",
+  "experimental_validation_of_generated_molecules": false,
+  "prior_internship_results_reported_not_new": {
+    "FEP+_whole_abs_to_rel": "internship repository: results/ablation_metrics.json: 0.386 -> 0.644 (26 series, 4 seeds)",
+    "architectures": "internship repository: results/arch_generalize.json, schnet_generalize.json (abs->rel all 5 improve)",
+    "cold_start": "internship repository: results/series_holdout.json: advantage vanishes when whole series held out"
+  },
+  "warnings_and_untested": [
+    "Only 5 strict held-out cliff pairs at the primary threshold: no model comparison is meaningful there.",
+    "Relative-model advantage on close analogues is exploratory (test-train) or non-significant (strict n=44, McNemar p=0.18).",
+    "On strict held-out large-gap cliffs (sim>=0.7/0.6) the absolute ChemProp is at least as good as the relative model.",
+    "Predicted gains for the demo seed (potent lead) are within assay noise; no candidate is predicted to be a clear improvement.",
+    "Pocket-aware scoring/docking not run; stereochemistry not modelled; generation limited to train-seen transformations.",
+    "No generated molecule has been synthesized or assayed.",
+    "Pair-level CIs treat pairs as independent although they share molecules.",
+    "Activity-cliff detection: verdict B (no demonstrated improvement over ChemProp); do not claim better cliff detection.",
+    "Strict-held-out primary cliff set has 5 positives; lead-optimization set (14 positives) is exploratory, not both-unseen.",
+    "Post-hoc setting-specific threshold check was added after seeing test results (disclosed; verdict unchanged)."
+  ],
+  "files": [
+    "README.md",
+    "figures/activity_cliff_confusion_matrices.png",
+    "figures/activity_cliff_precision_recall.png",
+    "figures/activity_cliff_results.png",
+    "figures/candidate_funnel.png",
+    "figures/relative_affinity_results.png",
+    "figures/workflow.png",
+    "metrics/activity_cliff_detection_metrics.json",
+    "metrics/activity_cliff_metrics.json",
+    "metrics/funnel.json",
+    "metrics/generated_candidates.csv",
+    "metrics/generation_recall.json",
+    "metrics/ranked_candidates.csv",
+    "metrics/retrospective_heldout_check.csv",
+    "metrics/seed_selection_table.csv",
+    "metrics/shortlist.md",
+    "metrics/validation_thresholds.json",
+    "summary.json"
+  ],
+  "activity_cliff_detection": {
+    "question": "does the relative-affinity model detect activity cliffs better than the existing ChemProp Mpro model?",
+    "verdict": "B",
+    "verdict_statement": "No demonstrated improvement over the baseline.",
+    "decision_rule_values": {
+      "B_primary_delta_AP_rel_minus_chemprop": -0.10422979630947726,
+      "B_primary_delta_AP_ci95_cluster": [
+        -0.4869519812482618,
+        0.19745870420669953
+      ],
+      "criterion_1_AP_gain_with_CI_excluding_0": false,
+      "B_primary_delta_F1_by_rule": {
+        "tau_val": 0.03167420814479638,
+        "tau_fixed_1.0": -0.13712374581939796
+      },
+      "criterion_2_F1_gain_at_both_thresholds": false,
+      "A_primary_AP": {
+        "chemprop_abs": 0.349047619047619,
+        "rel_siamese": 0.731111111111111,
+        "knn_sim": 0.3311688311688311
+      },
+      "criterion_3_A_not_worse": true,
+      "A_primary_n_positive_cliffs": 5,
+      "A_is_descriptive_only": true
+    },
+    "definition": {
+      "true_cliff": "Morgan(2,2048) Tanimoto>=0.80 and |dpIC50|>=1.0",
+      "predicted_cliff": "|predicted delta|>=tau",
+      "tau_val": {
+        "chemprop_abs": 0.65,
+        "rel_siamese": 1.0,
+        "knn_sim": 0.5
+      },
+      "tau_fixed": 1.0
+    },
+    "validation": {
+      "scheme": "5-fold CV inside the train partition (random_state=0); fold models retrained with the same recipes; pairs = train-train Tanimoto>=0.80",
+      "n_validation_pairs": 420,
+      "n_validation_cliffs": 27,
+      "n_val_val_pairs": 92,
+      "n_val_train_pairs": 328,
+      "per_model": {
+        "chemprop_abs": {
+          "tau_val": 0.65,
+          "val_f1_at_tau": 0.38461538461538464,
+          "val_ap": 0.2704785500525527,
+          "val_roc_auc": 0.7778720196022995,
+          "calibration_slope_true_on_pred_delta": 0.6276079735404104,
+          "val_rmse_delta": 0.49508723089577744
+        },
+        "rel_siamese": {
+          "tau_val": 1.0,
+          "val_f1_at_tau": 0.4878048780487805,
+          "val_ap": 0.5266895939378603,
+          "val_roc_auc": 0.8728677787201959,
+          "calibration_slope_true_on_pred_delta": 0.8760290068013659,
+          "val_rmse_delta": 0.4438603911413901
+        },
+        "knn_sim": {
+          "tau_val": 0.5,
+          "val_f1_at_tau": 0.5263157894736842,
+          "val_ap": 0.4744165055867909,
+          "val_roc_auc": 0.8552445575346339,
+          "calibration_slope_true_on_pred_delta": 0.9183564826864726,
+          "val_rmse_delta": 0.43763779781446005
+        }
+      }
+    },
+    "source_counts_verified": {
+      "sim>=0.8|A_test_test": {
+        "pairs": 44,
+        "cliffs": 5,
+        "tied_d0": 0
+      },
+      "sim>=0.8|B_test_train": {
+        "pairs": 220,
+        "cliffs": 14,
+        "tied_d0": 1
+      },
+      "sim>=0.8|train_train": {
+        "pairs": 420,
+        "cliffs": 27,
+        "tied_d0": 0
+      }
+    },
+    "setting_A_strict_test_test_PRIMARY": {
+      "n_pairs": 44,
+      "n_cliffs": 5,
+      "prevalence": 0.11363636363636363,
+      "majority_class_baseline": {
+        "accuracy": 0.8863636363636364,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "cluster_unit": "connected_components_of_pair_graph",
+      "n_clusters": 23,
+      "models": {
+        "chemprop_abs": {
+          "tau_val": {
+            "tau": 0.65,
+            "tp": 0,
+            "fp": 0,
+            "tn": 39,
+            "fn": 5,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "tau_fixed_1.0": {
+            "tau": 1.0,
+            "tp": 0,
+            "fp": 0,
+            "tn": 39,
+            "fn": 5,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "average_precision": 0.349047619047619,
+          "roc_auc": 0.8564102564102565
+        },
+        "rel_siamese": {
+          "tau_val": {
+            "tau": 1.0,
+            "tp": 2,
+            "fp": 0,
+            "tn": 39,
+            "fn": 3,
+            "precision": 1.0,
+            "recall": 0.4,
+            "f1": 0.5714285714285714
+          },
+          "tau_fixed_1.0": {
+            "tau": 1.0,
+            "tp": 2,
+            "fp": 0,
+            "tn": 39,
+            "fn": 3,
+            "precision": 1.0,
+            "recall": 0.4,
+            "f1": 0.5714285714285714
+          },
+          "average_precision": 0.731111111111111,
+          "roc_auc": 0.9487179487179488
+        },
+        "knn_sim": {
+          "tau_val": {
+            "tau": 0.5,
+            "tp": 0,
+            "fp": 1,
+            "tn": 38,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "tau_fixed_1.0": {
+            "tau": 1.0,
+            "tp": 0,
+            "fp": 0,
+            "tn": 39,
+            "fn": 5,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "average_precision": 0.3311688311688311,
+          "roc_auc": 0.8102564102564103
+        }
+      },
+      "paired_differences_rel_minus_chemprop_cluster_ci95": {
+        "ap": [
+          -0.0339166666666667,
+          0.6994841269841268
+        ],
+        "roc": [
+          -0.020832873690016556,
+          0.23003694581280745
+        ],
+        "f1|tau_val": [
+          0.0,
+          0.8
+        ],
+        "precision|tau_val": [
+          null,
+          null
+        ],
+        "recall|tau_val": [
+          0.0,
+          0.6666666666666666
+        ],
+        "f1|tau_fixed_1.0": [
+          0.0,
+          0.8
+        ],
+        "precision|tau_fixed_1.0": [
+          null,
+          null
+        ],
+        "recall|tau_fixed_1.0": [
+          0.0,
+          0.6666666666666666
+        ]
+      }
+    },
+    "setting_B_lead_optimization_test_train_PRIMARY_exploratory": {
+      "n_pairs": 220,
+      "n_cliffs": 14,
+      "prevalence": 0.06363636363636363,
+      "majority_class_baseline": {
+        "accuracy": 0.9363636363636364,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "cluster_unit": "query_test_molecule",
+      "n_clusters": 83,
+      "models": {
+        "chemprop_abs": {
+          "tau_val": {
+            "tau": 0.65,
+            "tp": 9,
+            "fp": 28,
+            "tn": 178,
+            "fn": 5,
+            "precision": 0.24324324324324326,
+            "recall": 0.6428571428571429,
+            "f1": 0.35294117647058826
+          },
+          "tau_fixed_1.0": {
+            "tau": 1.0,
+            "tp": 6,
+            "fp": 3,
+            "tn": 203,
+            "fn": 8,
+            "precision": 0.6666666666666666,
+            "recall": 0.42857142857142855,
+            "f1": 0.5217391304347826
+          },
+          "average_precision": 0.5704528763769889,
+          "roc_auc": 0.85748959778086
+        },
+        "rel_siamese": {
+          "tau_val": {
+            "tau": 1.0,
+            "tp": 5,
+            "fp": 7,
+            "tn": 199,
+            "fn": 9,
+            "precision": 0.4166666666666667,
+            "recall": 0.35714285714285715,
+            "f1": 0.38461538461538464
+          },
+          "tau_fixed_1.0": {
+            "tau": 1.0,
+            "tp": 5,
+            "fp": 7,
+            "tn": 199,
+            "fn": 9,
+            "precision": 0.4166666666666667,
+            "recall": 0.35714285714285715,
+            "f1": 0.38461538461538464
+          },
+          "average_precision": 0.4662230800675117,
+          "roc_auc": 0.7604022191400832
+        },
+        "knn_sim": {
+          "tau_val": {
+            "tau": 0.5,
+            "tp": 11,
+            "fp": 27,
+            "tn": 179,
+            "fn": 3,
+            "precision": 0.2894736842105263,
+            "recall": 0.7857142857142857,
+            "f1": 0.4230769230769231
+          },
+          "tau_fixed_1.0": {
+            "tau": 1.0,
+            "tp": 5,
+            "fp": 1,
+            "tn": 205,
+            "fn": 9,
+            "precision": 0.8333333333333334,
+            "recall": 0.35714285714285715,
+            "f1": 0.5
+          },
+          "average_precision": 0.5966144702632982,
+          "roc_auc": 0.8515950069348127
+        },
+        "chemprop_predpred(secondary)": {
+          "tau_val": {
+            "tau": 0.65,
+            "tp": 0,
+            "fp": 3,
+            "tn": 203,
+            "fn": 14,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "tau_fixed_1.0": {
+            "tau": 1.0,
+            "tp": 0,
+            "fp": 0,
+            "tn": 206,
+            "fn": 14,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "average_precision": 0.19625584472405674,
+          "roc_auc": 0.7600554785020804
+        },
+        "knn_predpred(secondary)": {
+          "tau_val": {
+            "tau": 0.5,
+            "tp": 0,
+            "fp": 2,
+            "tn": 204,
+            "fn": 14,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "tau_fixed_1.0": {
+            "tau": 1.0,
+            "tp": 0,
+            "fp": 0,
+            "tn": 206,
+            "fn": 14,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "average_precision": 0.10920557449183939,
+          "roc_auc": 0.6192787794729542
+        }
+      },
+      "paired_differences_rel_minus_chemprop_cluster_ci95": {
+        "ap": [
+          -0.4869519812482618,
+          0.19745870420669953
+        ],
+        "roc": [
+          -0.276088685697294,
+          0.03446697774587217
+        ],
+        "f1|tau_val": [
+          -0.23782372598162071,
+          0.29676383458839095
+        ],
+        "precision|tau_val": [
+          -0.12500767813267813,
+          0.536254658385093
+        ],
+        "recall|tau_val": [
+          -0.5714285714285714,
+          -0.0625
+        ],
+        "f1|tau_fixed_1.0": [
+          -0.566670692431562,
+          0.2759508113590259
+        ],
+        "precision|tau_fixed_1.0": [
+          -0.8333333333333334,
+          0.25
+        ],
+        "recall|tau_fixed_1.0": [
+          -0.5,
+          0.28571428571428575
+        ]
+      }
+    },
+    "sensitivity": {
+      "A_test_test|sim>=0.7": {
+        "n_pairs": 191,
+        "n_cliffs": 18,
+        "prevalence": 0.09424083769633508,
+        "majority_class_baseline": {
+          "accuracy": 0.9057591623036649,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "cluster_unit": "connected_components_of_pair_graph",
+        "n_clusters": 21,
+        "models": {
+          "chemprop_abs": {
+            "tau_val": {
+              "tau": 0.65,
+              "tp": 1,
+              "fp": 3,
+              "tn": 170,
+              "fn": 17,
+              "precision": 0.25,
+              "recall": 0.05555555555555555,
+              "f1": 0.09090909090909091
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 0,
+              "fp": 0,
+              "tn": 173,
+              "fn": 18,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "average_precision": 0.17485649604402448,
+            "roc_auc": 0.6926782273603083
+          },
+          "rel_siamese": {
+            "tau_val": {
+              "tau": 1.0,
+              "tp": 5,
+              "fp": 5,
+              "tn": 168,
+              "fn": 13,
+              "precision": 0.5,
+              "recall": 0.2777777777777778,
+              "f1": 0.35714285714285715
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 5,
+              "fp": 5,
+              "tn": 168,
+              "fn": 13,
+              "precision": 0.5,
+              "recall": 0.2777777777777778,
+              "f1": 0.35714285714285715
+            },
+            "average_precision": 0.3652166884739053,
+            "roc_auc": 0.8044315992292871
+          },
+          "knn_sim": {
+            "tau_val": {
+              "tau": 0.5,
+              "tp": 4,
+              "fp": 9,
+              "tn": 164,
+              "fn": 14,
+              "precision": 0.3076923076923077,
+              "recall": 0.2222222222222222,
+              "f1": 0.25806451612903225
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 1,
+              "fp": 0,
+              "tn": 173,
+              "fn": 17,
+              "precision": 1.0,
+              "recall": 0.05555555555555555,
+              "f1": 0.10526315789473684
+            },
+            "average_precision": 0.30709197670074995,
+            "roc_auc": 0.7241490044958253
+          }
+        },
+        "paired_differences_rel_minus_chemprop_cluster_ci95": {
+          "ap": [
+            0.04069659533471066,
+            0.4236583028429071
+          ],
+          "roc": [
+            0.01335758835758833,
+            0.23840216519647148
+          ],
+          "f1|tau_val": [
+            0.0,
+            0.4650090299277606
+          ],
+          "precision|tau_val": [
+            -0.16666666666666663,
+            0.6666666666666666
+          ],
+          "recall|tau_val": [
+            0.0,
+            0.5
+          ],
+          "f1|tau_fixed_1.0": [
+            0.0,
+            0.6879849137931032
+          ],
+          "precision|tau_fixed_1.0": [
+            null,
+            null
+          ],
+          "recall|tau_fixed_1.0": [
+            0.0,
+            0.75
+          ]
+        }
+      },
+      "A_test_test|sim>=0.6": {
+        "n_pairs": 476,
+        "n_cliffs": 60,
+        "prevalence": 0.12605042016806722,
+        "majority_class_baseline": {
+          "accuracy": 0.8739495798319328,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "cluster_unit": "connected_components_of_pair_graph",
+        "n_clusters": 12,
+        "models": {
+          "chemprop_abs": {
+            "tau_val": {
+              "tau": 0.65,
+              "tp": 6,
+              "fp": 11,
+              "tn": 405,
+              "fn": 54,
+              "precision": 0.35294117647058826,
+              "recall": 0.1,
+              "f1": 0.15584415584415584
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 0,
+              "fp": 0,
+              "tn": 416,
+              "fn": 60,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "average_precision": 0.19728133340836923,
+            "roc_auc": 0.6387019230769231
+          },
+          "rel_siamese": {
+            "tau_val": {
+              "tau": 1.0,
+              "tp": 9,
+              "fp": 16,
+              "tn": 400,
+              "fn": 51,
+              "precision": 0.36,
+              "recall": 0.15,
+              "f1": 0.21176470588235294
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 9,
+              "fp": 16,
+              "tn": 400,
+              "fn": 51,
+              "precision": 0.36,
+              "recall": 0.15,
+              "f1": 0.21176470588235294
+            },
+            "average_precision": 0.2626881214177995,
+            "roc_auc": 0.7156250000000001
+          },
+          "knn_sim": {
+            "tau_val": {
+              "tau": 0.5,
+              "tp": 17,
+              "fp": 41,
+              "tn": 375,
+              "fn": 43,
+              "precision": 0.29310344827586204,
+              "recall": 0.2833333333333333,
+              "f1": 0.288135593220339
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 3,
+              "fp": 2,
+              "tn": 414,
+              "fn": 57,
+              "precision": 0.6,
+              "recall": 0.05,
+              "f1": 0.09230769230769231
+            },
+            "average_precision": 0.28735826599340647,
+            "roc_auc": 0.7258814102564103
+          }
+        },
+        "paired_differences_rel_minus_chemprop_cluster_ci95": {
+          "ap": [
+            0.024661719531819695,
+            0.2714827002791116
+          ],
+          "roc": [
+            0.04409529767401883,
+            0.15836388074291305
+          ],
+          "f1|tau_val": [
+            0.0,
+            0.2564102564102564
+          ],
+          "precision|tau_val": [
+            -0.040000000000000036,
+            0.25
+          ],
+          "recall|tau_val": [
+            0.0,
+            0.3333333333333333
+          ],
+          "f1|tau_fixed_1.0": [
+            0.0,
+            0.42
+          ],
+          "precision|tau_fixed_1.0": [
+            null,
+            null
+          ],
+          "recall|tau_fixed_1.0": [
+            0.0,
+            0.3888888888888889
+          ]
+        }
+      },
+      "B_test_train|sim>=0.7": {
+        "n_pairs": 1262,
+        "n_cliffs": 127,
+        "prevalence": 0.10063391442155309,
+        "majority_class_baseline": {
+          "accuracy": 0.8993660855784469,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "cluster_unit": "query_test_molecule",
+        "n_clusters": 133,
+        "models": {
+          "chemprop_abs": {
+            "tau_val": {
+              "tau": 0.65,
+              "tp": 74,
+              "fp": 175,
+              "tn": 960,
+              "fn": 53,
+              "precision": 0.2971887550200803,
+              "recall": 0.5826771653543307,
+              "f1": 0.39361702127659576
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 28,
+              "fp": 30,
+              "tn": 1105,
+              "fn": 99,
+              "precision": 0.4827586206896552,
+              "recall": 0.2204724409448819,
+              "f1": 0.3027027027027027
+            },
+            "average_precision": 0.386645837732054,
+            "roc_auc": 0.8061257761282044
+          },
+          "rel_siamese": {
+            "tau_val": {
+              "tau": 1.0,
+              "tp": 35,
+              "fp": 42,
+              "tn": 1093,
+              "fn": 92,
+              "precision": 0.45454545454545453,
+              "recall": 0.2755905511811024,
+              "f1": 0.3431372549019608
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 35,
+              "fp": 42,
+              "tn": 1093,
+              "fn": 92,
+              "precision": 0.45454545454545453,
+              "recall": 0.2755905511811024,
+              "f1": 0.3431372549019608
+            },
+            "average_precision": 0.3959615137422075,
+            "roc_auc": 0.7608241701064901
+          },
+          "knn_sim": {
+            "tau_val": {
+              "tau": 0.5,
+              "tp": 88,
+              "fp": 206,
+              "tn": 929,
+              "fn": 39,
+              "precision": 0.29931972789115646,
+              "recall": 0.6929133858267716,
+              "f1": 0.4180522565320665
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 34,
+              "fp": 20,
+              "tn": 1115,
+              "fn": 93,
+              "precision": 0.6296296296296297,
+              "recall": 0.2677165354330709,
+              "f1": 0.3756906077348066
+            },
+            "average_precision": 0.4610590549124115,
+            "roc_auc": 0.8251413507232301
+          },
+          "chemprop_predpred(secondary)": {
+            "tau_val": {
+              "tau": 0.65,
+              "tp": 2,
+              "fp": 15,
+              "tn": 1120,
+              "fn": 125,
+              "precision": 0.11764705882352941,
+              "recall": 0.015748031496062992,
+              "f1": 0.027777777777777776
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 0,
+              "fp": 0,
+              "tn": 1135,
+              "fn": 127,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "average_precision": 0.157397165534233,
+            "roc_auc": 0.6284852058690902
+          },
+          "knn_predpred(secondary)": {
+            "tau_val": {
+              "tau": 0.5,
+              "tp": 25,
+              "fp": 44,
+              "tn": 1091,
+              "fn": 102,
+              "precision": 0.36231884057971014,
+              "recall": 0.1968503937007874,
+              "f1": 0.25510204081632654
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 3,
+              "fp": 2,
+              "tn": 1133,
+              "fn": 124,
+              "precision": 0.6,
+              "recall": 0.023622047244094488,
+              "f1": 0.045454545454545456
+            },
+            "average_precision": 0.25560167285475244,
+            "roc_auc": 0.7135245759478304
+          }
+        },
+        "paired_differences_rel_minus_chemprop_cluster_ci95": {
+          "ap": [
+            -0.14392400497274566,
+            0.14224030994333944
+          ],
+          "roc": [
+            -0.15823382442110842,
+            0.045002697969429385
+          ],
+          "f1|tau_val": [
+            -0.16046258277888878,
+            0.0690101848115763
+          ],
+          "precision|tau_val": [
+            0.025332743134325597,
+            0.31024970530311813
+          ],
+          "recall|tau_val": [
+            -0.45745923642871344,
+            -0.18385192642079257
+          ],
+          "f1|tau_fixed_1.0": [
+            -0.1372312929525761,
+            0.18990665835375317
+          ],
+          "precision|tau_fixed_1.0": [
+            -0.2527571675468791,
+            0.20207571066704152
+          ],
+          "recall|tau_fixed_1.0": [
+            -0.1014554163596168,
+            0.1768775510204081
+          ]
+        }
+      },
+      "B_test_train|sim>=0.6": {
+        "n_pairs": 3747,
+        "n_cliffs": 520,
+        "prevalence": 0.13877768881772085,
+        "majority_class_baseline": {
+          "accuracy": 0.8612223111822792,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "cluster_unit": "query_test_molecule",
+        "n_clusters": 141,
+        "models": {
+          "chemprop_abs": {
+            "tau_val": {
+              "tau": 0.65,
+              "tp": 303,
+              "fp": 494,
+              "tn": 2733,
+              "fn": 217,
+              "precision": 0.38017565872020076,
+              "recall": 0.5826923076923077,
+              "f1": 0.4601366742596811
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 158,
+              "fp": 99,
+              "tn": 3128,
+              "fn": 362,
+              "precision": 0.6147859922178989,
+              "recall": 0.3038461538461538,
+              "f1": 0.4066924066924067
+            },
+            "average_precision": 0.47339931493148135,
+            "roc_auc": 0.8108149984505733
+          },
+          "rel_siamese": {
+            "tau_val": {
+              "tau": 1.0,
+              "tp": 156,
+              "fp": 156,
+              "tn": 3071,
+              "fn": 364,
+              "precision": 0.5,
+              "recall": 0.3,
+              "f1": 0.375
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 156,
+              "fp": 156,
+              "tn": 3071,
+              "fn": 364,
+              "precision": 0.5,
+              "recall": 0.3,
+              "f1": 0.375
+            },
+            "average_precision": 0.38762093349904087,
+            "roc_auc": 0.7463752353936736
+          },
+          "knn_sim": {
+            "tau_val": {
+              "tau": 0.5,
+              "tp": 379,
+              "fp": 730,
+              "tn": 2497,
+              "fn": 141,
+              "precision": 0.3417493237150586,
+              "recall": 0.7288461538461538,
+              "f1": 0.4653161448741559
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 194,
+              "fp": 79,
+              "tn": 3148,
+              "fn": 326,
+              "precision": 0.7106227106227107,
+              "recall": 0.3730769230769231,
+              "f1": 0.489281210592686
+            },
+            "average_precision": 0.5758744576356384,
+            "roc_auc": 0.8297758098734238
+          },
+          "chemprop_predpred(secondary)": {
+            "tau_val": {
+              "tau": 0.65,
+              "tp": 59,
+              "fp": 117,
+              "tn": 3110,
+              "fn": 461,
+              "precision": 0.3352272727272727,
+              "recall": 0.11346153846153846,
+              "f1": 0.16954022988505746
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 6,
+              "fp": 12,
+              "tn": 3215,
+              "fn": 514,
+              "precision": 0.3333333333333333,
+              "recall": 0.011538461538461539,
+              "f1": 0.022304832713754646
+            },
+            "average_precision": 0.23401165894237863,
+            "roc_auc": 0.6545582942003767
+          },
+          "knn_predpred(secondary)": {
+            "tau_val": {
+              "tau": 0.5,
+              "tp": 172,
+              "fp": 328,
+              "tn": 2899,
+              "fn": 348,
+              "precision": 0.344,
+              "recall": 0.33076923076923076,
+              "f1": 0.33725490196078434
+            },
+            "tau_fixed_1.0": {
+              "tau": 1.0,
+              "tp": 40,
+              "fp": 37,
+              "tn": 3190,
+              "fn": 480,
+              "precision": 0.5194805194805194,
+              "recall": 0.07692307692307693,
+              "f1": 0.13400335008375208
+            },
+            "average_precision": 0.31369964038215115,
+            "roc_auc": 0.7237074205620844
+          }
+        },
+        "paired_differences_rel_minus_chemprop_cluster_ci95": {
+          "ap": [
+            -0.19392101778727833,
+            0.021581223533760508
+          ],
+          "roc": [
+            -0.11835282443756595,
+            -0.013894920200147617
+          ],
+          "f1|tau_val": [
+            -0.16482711873912495,
+            -0.010269198261956792
+          ],
+          "precision|tau_val": [
+            0.01754143587307832,
+            0.24711983621110545
+          ],
+          "recall|tau_val": [
+            -0.38750815217391305,
+            -0.20213270579549658
+          ],
+          "f1|tau_fixed_1.0": [
+            -0.1396450718219952,
+            0.07679537352321883
+          ],
+          "precision|tau_fixed_1.0": [
+            -0.2790612245997027,
+            0.08189258866475506
+          ],
+          "recall|tau_fixed_1.0": [
+            -0.10104948302940409,
+            0.08385429779114598
+          ]
+        }
+      }
+    },
+    "endpoint_compatibility": {
+      "chemprop_abs": {
+        "trained_on": "data/moonshot/train.csv pIC50 (models/chemprop_moonshot/args.json)",
+        "test_rmse_pIC50": 0.44938615465337844,
+        "test_mean_bias": -0.0038596351317880216
+      },
+      "rel_siamese": {
+        "trained_on": "pIC50 differences of same-series train pairs, data/moonshot/all.csv split==train",
+        "output_unit": "predicted pIC50(query) - pIC50(reference)"
+      },
+      "fep_models_used": false,
+      "validation_calibration": {
+        "chemprop_abs": {
+          "slope_true_on_pred": 0.6276079735404104,
+          "rmse_delta": 0.49508723089577744
+        },
+        "rel_siamese": {
+          "slope_true_on_pred": 0.8760290068013659,
+          "rmse_delta": 0.4438603911413901
+        },
+        "knn_sim": {
+          "slope_true_on_pred": 0.9183564826864726,
+          "rmse_delta": 0.43763779781446005
+        }
+      }
+    },
+    "inference_protocol": "held-out activities masked (NaN) at inference; thresholds from out-of-fold train-partition CV only; true cliff labels computed after predictions (posthoc_* columns)",
+    "docs": "activity_cliff_detection_report.md",
+    "reading": "No demonstrated improvement. Strict A has 5 positives (descriptive). In B (reference activity available) ChemProp and 5-NN are at least as good as the relative model. Only threshold-free detection on strict held-out pairs at Tanimoto>=0.7/0.6 favours the relative model (CIs exclude 0)."
+  },
+  "research_repo_head_at_run": "46ccd46",
+  "provenance": "Frozen reference-run summary produced in the internship research workspace and re-verified in this repository: the packaged modules reproduce the demo, ranking, recall and cliff-detection metrics (see results/README.md). Paths were mapped to this repository's layout.",
+  "limitation_notes": [
+    "Hydrogen<->substituent edits were not matched in the reported generation runs (opt-in switch CLIFFFORGE_MATCH_H_SITES=1); reported edits are substituent-for-substituent swaps."
+  ]
+}

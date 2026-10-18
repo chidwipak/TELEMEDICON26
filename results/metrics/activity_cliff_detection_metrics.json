@@ -1,0 +1,3728 @@
+{
+  "declared_protocol": "-------------------------------------------------\nData / split   data/moonshot/all.csv, 961 train / 141 test (unchanged). pIC50 = 6 - log10 IC50[uM].\nCliff (true)   Morgan(r=2, 2048) Tanimoto >= 0.80  AND  |pIC50(a) - pIC50(b)| >= 1.0  (PRIMARY).\n               Sensitivity only: Tanimoto >= 0.70 / 0.60 with the same |delta| (never promoted).\nPredicted cliff  |predicted delta| >= tau.\n               tau_val  = F1-maximising tau on OUT-OF-FOLD validation pairs from 5-fold CV inside the TRAIN\n                          partition (cliffforge.cv; train-train pairs with Tanimoto >= 0.80), chosen per\n                          model, tie -> closest to 1.0.  Test labels are never used for tau.\n               tau_fixed = 1.0 (transparent reference).\nSetting A      STRICT held-out pairs: both compounds in the test partition.  Predictions use structures only.\nSetting B      LEAD-OPTIMISATION: one test compound (query) + one TRAIN reference.  The query's activity is\n               never used; the reference's measured activity MAY be used.  Exploratory; NOT both-unseen.\nPredicted delta (signed, query - reference or a - b)\n   relative model   f(query, ref) ensemble mean (3 seeds), antisymmetrised.  Reference activity not needed.\n   ChemProp (A)     chemprop(a) - chemprop(b)\n   ChemProp (B)     chemprop(query) - measured_pIC50(ref)   <- uses the available reference activity\n                    (the most favourable fair protocol for the absolute baseline); the pred-pred variant\n                    chemprop(query) - chemprop(ref) is reported as secondary.\n   5-NN baseline    similarity-weighted 5-NN over TRAIN labels, same protocols as ChemProp.\n   majority class   \"never a cliff\"; chance AP = prevalence.\nUncertainty    cluster bootstrap (2000 resamples): A -> connected components of the pair graph;\n               B -> by query (test) molecule (series-level variant also reported). Paired differences use the\n               same resamples.  Exact Clopper-Pearson CI for recall.\nDECISION RULE (outcome chosen mechanically from the metrics below)\n   Setting A has far fewer than 10 positives -> descriptive only.\n   (A) Preliminary evidence of better detection  iff ALL:\n        1. B-primary: AP(rel) > AP(ChemProp) and the 95% cluster-bootstrap CI of delta-AP excludes 0;\n        2. B-primary: F1(rel) > F1(ChemProp) at BOTH tau_val and tau=1.0;\n        3. A-primary: AP(rel) >= AP(ChemProp) and F1(rel) >= F1(ChemProp) at both thresholds (point estimates).\n   (B) No demonstrated improvement  iff B-primary delta-AP <= 0, or delta-F1 <= 0 at both thresholds.\n   (C) Inconclusive otherwise.",
+  "source_data_counts_recomputed": {
+    "sim>=0.8|A_test_test": {
+      "pairs": 44,
+      "cliffs": 5,
+      "tied_d0": 0
+    },
+    "sim>=0.8|B_test_train": {
+      "pairs": 220,
+      "cliffs": 14,
+      "tied_d0": 1
+    },
+    "sim>=0.8|train_train": {
+      "pairs": 420,
+      "cliffs": 27,
+      "tied_d0": 0
+    },
+    "sim>=0.7|A_test_test": {
+      "pairs": 191,
+      "cliffs": 18,
+      "tied_d0": 0
+    },
+    "sim>=0.7|B_test_train": {
+      "pairs": 1262,
+      "cliffs": 127,
+      "tied_d0": 2
+    },
+    "sim>=0.7|train_train": {
+      "pairs": 2577,
+      "cliffs": 344,
+      "tied_d0": 4
+    },
+    "sim>=0.6|A_test_test": {
+      "pairs": 476,
+      "cliffs": 60,
+      "tied_d0": 0
+    },
+    "sim>=0.6|B_test_train": {
+      "pairs": 3747,
+      "cliffs": 520,
+      "tied_d0": 2
+    },
+    "sim>=0.6|train_train": {
+      "pairs": 8378,
+      "cliffs": 1481,
+      "tied_d0": 10
+    }
+  },
+  "pairs_within_0.4_of_cliff_boundary_(|d| in [0.6,1.4], test-involved sim>=0.8)": 43,
+  "duplicates": {
+    "n_molecules": 1102,
+    "n_unique_smiles": 1102,
+    "compounds_with_replicate_measurements": 192,
+    "assay_noise_sd_pIC50": 0.396
+  },
+  "models": {
+    "chemprop_abs": "models/chemprop_moonshot/fold_0/model_0/model.pt (ChemProp 1.6.1 absolute-pIC50 baseline)",
+    "rel_siamese": "models/rel_siamese_s{0,1,2}.pt (train-partition only)",
+    "knn_sim": "similarity-weighted 5-NN over train labels (non-learning)"
+  },
+  "validation": {
+    "scheme": "5-fold CV inside the train partition (random_state=0); fold models retrained with the same recipes; pairs = train-train Tanimoto>=0.80",
+    "n_validation_pairs": 420,
+    "n_validation_cliffs": 27,
+    "n_val_val_pairs": 92,
+    "n_val_train_pairs": 328,
+    "thresholds": {
+      "chemprop_abs": 0.65,
+      "rel_siamese": 1.0,
+      "knn_sim": 0.5
+    },
+    "posthoc_setting_specific_thresholds": {
+      "A_test_test": {
+        "chemprop_abs": 0.35,
+        "rel_siamese": 1.35,
+        "knn_sim": 0.65,
+        "n_val_pairs": 92,
+        "n_val_cliffs": 7
+      },
+      "B_test_train": {
+        "chemprop_abs": 0.85,
+        "rel_siamese": 0.75,
+        "knn_sim": 0.8,
+        "n_val_pairs": 328,
+        "n_val_cliffs": 20
+      }
+    },
+    "per_model": {
+      "chemprop_abs": {
+        "tau_val": 0.65,
+        "val_f1_at_tau": 0.38461538461538464,
+        "f1_curve": [
+          [
+            0.05,
+            0.14054054054054055
+          ],
+          [
+            0.1,
+            0.15476190476190477
+          ],
+          [
+            0.15,
+            0.1718213058419244
+          ],
+          [
+            0.2,
+            0.18473895582329317
+          ],
+          [
+            0.25,
+            0.19090909090909092
+          ],
+          [
+            0.3,
+            0.2131979695431472
+          ],
+          [
+            0.35,
+            0.23255813953488372
+          ],
+          [
+            0.4,
+            0.2361111111111111
+          ],
+          [
+            0.45,
+            0.25
+          ],
+          [
+            0.5,
+            0.26785714285714285
+          ],
+          [
+            0.55,
+            0.30927835051546393
+          ],
+          [
+            0.6,
+            0.3488372093023256
+          ],
+          [
+            0.65,
+            0.38461538461538464
+          ],
+          [
+            0.7,
+            0.30985915492957744
+          ],
+          [
+            0.75,
+            0.3384615384615385
+          ],
+          [
+            0.8,
+            0.34375
+          ],
+          [
+            0.85,
+            0.3793103448275862
+          ],
+          [
+            0.9,
+            0.3333333333333333
+          ],
+          [
+            0.95,
+            0.3076923076923077
+          ],
+          [
+            1.0,
+            0.3404255319148936
+          ],
+          [
+            1.05,
+            0.27906976744186046
+          ],
+          [
+            1.1,
+            0.3076923076923077
+          ],
+          [
+            1.15,
+            0.3157894736842105
+          ],
+          [
+            1.2,
+            0.2222222222222222
+          ],
+          [
+            1.25,
+            0.2222222222222222
+          ],
+          [
+            1.3,
+            0.22857142857142856
+          ],
+          [
+            1.35,
+            0.22857142857142856
+          ],
+          [
+            1.4,
+            0.17647058823529413
+          ],
+          [
+            1.45,
+            0.125
+          ],
+          [
+            1.5,
+            0.125
+          ],
+          [
+            1.55,
+            0.125
+          ],
+          [
+            1.6,
+            0.125
+          ],
+          [
+            1.65,
+            0.06666666666666667
+          ],
+          [
+            1.7,
+            0.06666666666666667
+          ],
+          [
+            1.75,
+            0.0
+          ],
+          [
+            1.8,
+            0.0
+          ],
+          [
+            1.85,
+            0.0
+          ],
+          [
+            1.9,
+            0.0
+          ],
+          [
+            1.95,
+            0.0
+          ],
+          [
+            2.0,
+            0.0
+          ]
+        ],
+        "val_ap": 0.2704785500525527,
+        "val_roc_auc": 0.7778720196022995,
+        "calibration_slope_true_on_pred_delta": 0.6276079735404104,
+        "val_rmse_delta": 0.49508723089577744
+      },
+      "rel_siamese": {
+        "tau_val": 1.0,
+        "val_f1_at_tau": 0.4878048780487805,
+        "f1_curve": [
+          [
+            0.05,
+            0.14835164835164835
+          ],
+          [
+            0.1,
+            0.18685121107266436
+          ],
+          [
+            0.15,
+            0.21551724137931033
+          ],
+          [
+            0.2,
+            0.24858757062146894
+          ],
+          [
+            0.25,
+            0.28
+          ],
+          [
+            0.3,
+            0.3333333333333333
+          ],
+          [
+            0.35,
+            0.35714285714285715
+          ],
+          [
+            0.4,
+            0.36
+          ],
+          [
+            0.45,
+            0.40476190476190477
+          ],
+          [
+            0.5,
+            0.3888888888888889
+          ],
+          [
+            0.55,
+            0.3880597014925373
+          ],
+          [
+            0.6,
+            0.4067796610169492
+          ],
+          [
+            0.65,
+            0.42105263157894735
+          ],
+          [
+            0.7,
+            0.46153846153846156
+          ],
+          [
+            0.75,
+            0.48
+          ],
+          [
+            0.8,
+            0.4583333333333333
+          ],
+          [
+            0.85,
+            0.46808510638297873
+          ],
+          [
+            0.9,
+            0.46808510638297873
+          ],
+          [
+            0.95,
+            0.4782608695652174
+          ],
+          [
+            1.0,
+            0.4878048780487805
+          ],
+          [
+            1.05,
+            0.4878048780487805
+          ],
+          [
+            1.1,
+            0.46153846153846156
+          ],
+          [
+            1.15,
+            0.46153846153846156
+          ],
+          [
+            1.2,
+            0.4864864864864865
+          ],
+          [
+            1.25,
+            0.4444444444444444
+          ],
+          [
+            1.3,
+            0.4444444444444444
+          ],
+          [
+            1.35,
+            0.45714285714285713
+          ],
+          [
+            1.4,
+            0.36363636363636365
+          ],
+          [
+            1.45,
+            0.3125
+          ],
+          [
+            1.5,
+            0.13793103448275862
+          ],
+          [
+            1.55,
+            0.13793103448275862
+          ],
+          [
+            1.6,
+            0.13793103448275862
+          ],
+          [
+            1.65,
+            0.0
+          ],
+          [
+            1.7,
+            0.0
+          ],
+          [
+            1.75,
+            0.0
+          ],
+          [
+            1.8,
+            0.0
+          ],
+          [
+            1.85,
+            0.0
+          ],
+          [
+            1.9,
+            0.0
+          ],
+          [
+            1.95,
+            0.0
+          ],
+          [
+            2.0,
+            0.0
+          ]
+        ],
+        "val_ap": 0.5266895939378603,
+        "val_roc_auc": 0.8728677787201959,
+        "calibration_slope_true_on_pred_delta": 0.8760290068013659,
+        "val_rmse_delta": 0.4438603911413901
+      },
+      "knn_sim": {
+        "tau_val": 0.5,
+        "val_f1_at_tau": 0.5263157894736842,
+        "f1_curve": [
+          [
+            0.05,
+            0.13941018766756033
+          ],
+          [
+            0.1,
+            0.16774193548387098
+          ],
+          [
+            0.15,
+            0.18867924528301888
+          ],
+          [
+            0.2,
+            0.22325581395348837
+          ],
+          [
+            0.25,
+            0.22826086956521738
+          ],
+          [
+            0.3,
+            0.2692307692307692
+          ],
+          [
+            0.35,
+            0.3333333333333333
+          ],
+          [
+            0.4,
+            0.38461538461538464
+          ],
+          [
+            0.45,
+            0.4878048780487805
+          ],
+          [
+            0.5,
+            0.5263157894736842
+          ],
+          [
+            0.55,
+            0.5230769230769231
+          ],
+          [
+            0.6,
+            0.49122807017543857
+          ],
+          [
+            0.65,
+            0.5185185185185185
+          ],
+          [
+            0.7,
+            0.5
+          ],
+          [
+            0.75,
+            0.52
+          ],
+          [
+            0.8,
+            0.4888888888888889
+          ],
+          [
+            0.85,
+            0.46511627906976744
+          ],
+          [
+            0.9,
+            0.42857142857142855
+          ],
+          [
+            0.95,
+            0.3157894736842105
+          ],
+          [
+            1.0,
+            0.2702702702702703
+          ],
+          [
+            1.05,
+            0.2777777777777778
+          ],
+          [
+            1.1,
+            0.2857142857142857
+          ],
+          [
+            1.15,
+            0.24242424242424243
+          ],
+          [
+            1.2,
+            0.24242424242424243
+          ],
+          [
+            1.25,
+            0.24242424242424243
+          ],
+          [
+            1.3,
+            0.12903225806451613
+          ],
+          [
+            1.35,
+            0.12903225806451613
+          ],
+          [
+            1.4,
+            0.12903225806451613
+          ],
+          [
+            1.45,
+            0.13333333333333333
+          ],
+          [
+            1.5,
+            0.13793103448275862
+          ],
+          [
+            1.55,
+            0.13793103448275862
+          ],
+          [
+            1.6,
+            0.07142857142857142
+          ],
+          [
+            1.65,
+            0.07142857142857142
+          ],
+          [
+            1.7,
+            0.0
+          ],
+          [
+            1.75,
+            0.0
+          ],
+          [
+            1.8,
+            0.0
+          ],
+          [
+            1.85,
+            0.0
+          ],
+          [
+            1.9,
+            0.0
+          ],
+          [
+            1.95,
+            0.0
+          ],
+          [
+            2.0,
+            0.0
+          ]
+        ],
+        "val_ap": 0.4744165055867909,
+        "val_roc_auc": 0.8552445575346339,
+        "calibration_slope_true_on_pred_delta": 0.9183564826864726,
+        "val_rmse_delta": 0.43763779781446005
+      }
+    }
+  },
+  "tau_fixed": 1.0,
+  "endpoint_compatibility": {
+    "chemprop_abs": {
+      "trained_on": "data/moonshot train partition pIC50 (models/chemprop_moonshot/args.json)",
+      "test_rmse_pIC50": 0.44938615465337844,
+      "test_mean_bias": -0.0038596351317880216
+    },
+    "rel_siamese": {
+      "trained_on": "pIC50 differences of same-series train pairs, data/moonshot/all.csv split==train",
+      "output_unit": "predicted pIC50(query) - pIC50(reference)"
+    },
+    "fep_models_used": false,
+    "validation_calibration": {
+      "chemprop_abs": {
+        "slope_true_on_pred": 0.6276079735404104,
+        "rmse_delta": 0.49508723089577744
+      },
+      "rel_siamese": {
+        "slope_true_on_pred": 0.8760290068013659,
+        "rmse_delta": 0.4438603911413901
+      },
+      "knn_sim": {
+        "slope_true_on_pred": 0.9183564826864726,
+        "rmse_delta": 0.43763779781446005
+      }
+    }
+  },
+  "results": {
+    "A_test_test|sim>=0.8": {
+      "n_pairs": 44,
+      "n_cliffs": 5,
+      "prevalence": 0.11363636363636363,
+      "n_distinct_molecules_involved": 60,
+      "n_distinct_query_molecules": null,
+      "majority_class_baseline": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 39,
+        "fn": 5,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "specificity": 1.0,
+        "accuracy": 0.8863636363636364,
+        "balanced_accuracy": 0.5,
+        "mcc": null,
+        "note": "predicts 'no cliff' for every pair: accuracy = 1 - prevalence, recall 0, precision undefined; chance AP = prevalence, ROC-AUC 0.5"
+      },
+      "models": {
+        "chemprop_abs": {
+          "tau_val": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 39,
+            "fn": 5,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0,
+            "specificity": 1.0,
+            "accuracy": 0.8863636363636364,
+            "balanced_accuracy": 0.5,
+            "mcc": null,
+            "tau": 0.65,
+            "predicted_cliffs": 0,
+            "recall_exact_ci95": [
+              0.0,
+              0.5218237501049814
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 39,
+            "fn": 5,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0,
+            "specificity": 1.0,
+            "accuracy": 0.8863636363636364,
+            "balanced_accuracy": 0.5,
+            "mcc": null,
+            "tau": 1.0,
+            "predicted_cliffs": 0,
+            "recall_exact_ci95": [
+              0.0,
+              0.5218237501049814
+            ]
+          },
+          "average_precision": 0.349047619047619,
+          "roc_auc": 0.8564102564102565,
+          "direction_accuracy_secondary": {
+            "n": 44,
+            "value": 0.5227272727272727
+          }
+        },
+        "rel_siamese": {
+          "tau_val": {
+            "tp": 2,
+            "fp": 0,
+            "tn": 39,
+            "fn": 3,
+            "precision": 1.0,
+            "recall": 0.4,
+            "f1": 0.5714285714285714,
+            "specificity": 1.0,
+            "accuracy": 0.9318181818181818,
+            "balanced_accuracy": 0.7,
+            "mcc": 0.609449400220044,
+            "tau": 1.0,
+            "predicted_cliffs": 2,
+            "recall_exact_ci95": [
+              0.052744950526316906,
+              0.8533672003653268
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 2,
+            "fp": 0,
+            "tn": 39,
+            "fn": 3,
+            "precision": 1.0,
+            "recall": 0.4,
+            "f1": 0.5714285714285714,
+            "specificity": 1.0,
+            "accuracy": 0.9318181818181818,
+            "balanced_accuracy": 0.7,
+            "mcc": 0.609449400220044,
+            "tau": 1.0,
+            "predicted_cliffs": 2,
+            "recall_exact_ci95": [
+              0.052744950526316906,
+              0.8533672003653268
+            ]
+          },
+          "average_precision": 0.731111111111111,
+          "roc_auc": 0.9487179487179488,
+          "direction_accuracy_secondary": {
+            "n": 44,
+            "value": 0.6590909090909091
+          }
+        },
+        "knn_sim": {
+          "tau_val": {
+            "tp": 0,
+            "fp": 1,
+            "tn": 38,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "specificity": 0.9743589743589743,
+            "accuracy": 0.8636363636363636,
+            "balanced_accuracy": 0.48717948717948717,
+            "mcc": -0.05460324724246339,
+            "tau": 0.5,
+            "predicted_cliffs": 1,
+            "recall_exact_ci95": [
+              0.0,
+              0.5218237501049814
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 39,
+            "fn": 5,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0,
+            "specificity": 1.0,
+            "accuracy": 0.8863636363636364,
+            "balanced_accuracy": 0.5,
+            "mcc": null,
+            "tau": 1.0,
+            "predicted_cliffs": 0,
+            "recall_exact_ci95": [
+              0.0,
+              0.5218237501049814
+            ]
+          },
+          "average_precision": 0.3311688311688311,
+          "roc_auc": 0.8102564102564103,
+          "direction_accuracy_secondary": {
+            "n": 44,
+            "value": 0.5454545454545454
+          }
+        }
+      },
+      "posthoc_setting_specific_tau": {
+        "note": "POST-HOC sensitivity (protocol deviation disclosed): tau chosen on the matching validation pair type only; does not affect the declared verdict",
+        "thresholds": {
+          "chemprop_abs": 0.35,
+          "rel_siamese": 1.35,
+          "knn_sim": 0.65
+        },
+        "models": {
+          "chemprop_abs": {
+            "tp": 0,
+            "fp": 1,
+            "tn": 38,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "specificity": 0.9743589743589743,
+            "accuracy": 0.8636363636363636,
+            "balanced_accuracy": 0.48717948717948717,
+            "mcc": -0.05460324724246339,
+            "tau": 0.35
+          },
+          "rel_siamese": {
+            "tp": 1,
+            "fp": 0,
+            "tn": 39,
+            "fn": 4,
+            "precision": 1.0,
+            "recall": 0.2,
+            "f1": 0.3333333333333333,
+            "specificity": 1.0,
+            "accuracy": 0.9090909090909091,
+            "balanced_accuracy": 0.6,
+            "mcc": 0.42590532849121443,
+            "tau": 1.35
+          },
+          "knn_sim": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 39,
+            "fn": 5,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0,
+            "specificity": 1.0,
+            "accuracy": 0.8863636363636364,
+            "balanced_accuracy": 0.5,
+            "mcc": null,
+            "tau": 0.65
+          }
+        }
+      },
+      "uncertainty": {
+        "cluster_unit": "connected_components_of_pair_graph",
+        "n_clusters": 23,
+        "n_resamples": 2000,
+        "resamples_without_positives": 93,
+        "metrics": {
+          "chemprop_abs|ap": {
+            "ci95": [
+              0.1111111111111111,
+              0.6896494708994709
+            ],
+            "n_valid_resamples": 1907
+          },
+          "chemprop_abs|roc": {
+            "ci95": [
+              0.7238146551724138,
+              0.9419895104895105
+            ],
+            "n_valid_resamples": 1907
+          },
+          "chemprop_abs|precision|tau_val": {
+            "ci95": [
+              null,
+              null
+            ],
+            "n_valid_resamples": 0
+          },
+          "chemprop_abs|recall|tau_val": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n_valid_resamples": 1907
+          },
+          "chemprop_abs|f1|tau_val": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n_valid_resamples": 1907
+          },
+          "chemprop_abs|precision|tau_fixed_1.0": {
+            "ci95": [
+              null,
+              null
+            ],
+            "n_valid_resamples": 0
+          },
+          "chemprop_abs|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n_valid_resamples": 1907
+          },
+          "chemprop_abs|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n_valid_resamples": 1907
+          },
+          "rel_siamese|ap": {
+            "ci95": [
+              0.25,
+              1.0
+            ],
+            "n_valid_resamples": 1907
+          },
+          "rel_siamese|roc": {
+            "ci95": [
+              0.875,
+              1.0
+            ],
+            "n_valid_resamples": 1907
+          },
+          "rel_siamese|precision|tau_val": {
+            "ci95": [
+              1.0,
+              1.0
+            ],
+            "n_valid_resamples": 1264
+          },
+          "rel_siamese|recall|tau_val": {
+            "ci95": [
+              0.0,
+              0.6666666666666666
+            ],
+            "n_valid_resamples": 1907
+          },
+          "rel_siamese|f1|tau_val": {
+            "ci95": [
+              0.0,
+              0.8
+            ],
+            "n_valid_resamples": 1907
+          },
+          "rel_siamese|precision|tau_fixed_1.0": {
+            "ci95": [
+              1.0,
+              1.0
+            ],
+            "n_valid_resamples": 1264
+          },
+          "rel_siamese|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.6666666666666666
+            ],
+            "n_valid_resamples": 1907
+          },
+          "rel_siamese|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.8
+            ],
+            "n_valid_resamples": 1907
+          },
+          "knn_sim|ap": {
+            "ci95": [
+              0.058823529411764705,
+              0.8204999999999998
+            ],
+            "n_valid_resamples": 1907
+          },
+          "knn_sim|roc": {
+            "ci95": [
+              0.4954054054054054,
+              0.9582389663182346
+            ],
+            "n_valid_resamples": 1907
+          },
+          "knn_sim|precision|tau_val": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n_valid_resamples": 1261
+          },
+          "knn_sim|recall|tau_val": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n_valid_resamples": 1907
+          },
+          "knn_sim|f1|tau_val": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n_valid_resamples": 1974
+          },
+          "knn_sim|precision|tau_fixed_1.0": {
+            "ci95": [
+              null,
+              null
+            ],
+            "n_valid_resamples": 0
+          },
+          "knn_sim|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n_valid_resamples": 1907
+          },
+          "knn_sim|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n_valid_resamples": 1907
+          }
+        },
+        "paired_differences_rel_minus_chemprop": {
+          "ap": {
+            "ci95": [
+              -0.0339166666666667,
+              0.6994841269841268
+            ],
+            "n_valid_resamples": 1907
+          },
+          "roc": {
+            "ci95": [
+              -0.020832873690016556,
+              0.23003694581280745
+            ],
+            "n_valid_resamples": 1907
+          },
+          "f1|tau_val": {
+            "ci95": [
+              0.0,
+              0.8
+            ],
+            "n_valid_resamples": 1907
+          },
+          "precision|tau_val": {
+            "ci95": [
+              null,
+              null
+            ],
+            "n_valid_resamples": 0
+          },
+          "recall|tau_val": {
+            "ci95": [
+              0.0,
+              0.6666666666666666
+            ],
+            "n_valid_resamples": 1907
+          },
+          "f1|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.8
+            ],
+            "n_valid_resamples": 1907
+          },
+          "precision|tau_fixed_1.0": {
+            "ci95": [
+              null,
+              null
+            ],
+            "n_valid_resamples": 0
+          },
+          "recall|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.6666666666666666
+            ],
+            "n_valid_resamples": 1907
+          }
+        }
+      },
+      "matched_pair_discordance_on_true_cliffs": {
+        "tau_val": {
+          "rel_detects_chemprop_misses": 2,
+          "chemprop_detects_rel_misses": 0,
+          "both_detect": 0,
+          "neither_detects": 3
+        },
+        "tau_fixed_1.0": {
+          "rel_detects_chemprop_misses": 2,
+          "chemprop_detects_rel_misses": 0,
+          "both_detect": 0,
+          "neither_detects": 3
+        }
+      }
+    },
+    "A_test_test|sim>=0.7": {
+      "n_pairs": 191,
+      "n_cliffs": 18,
+      "prevalence": 0.09424083769633508,
+      "n_distinct_molecules_involved": 114,
+      "n_distinct_query_molecules": null,
+      "majority_class_baseline": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 173,
+        "fn": 18,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "specificity": 1.0,
+        "accuracy": 0.9057591623036649,
+        "balanced_accuracy": 0.5,
+        "mcc": null,
+        "note": "predicts 'no cliff' for every pair: accuracy = 1 - prevalence, recall 0, precision undefined; chance AP = prevalence, ROC-AUC 0.5"
+      },
+      "models": {
+        "chemprop_abs": {
+          "tau_val": {
+            "tp": 1,
+            "fp": 3,
+            "tn": 170,
+            "fn": 17,
+            "precision": 0.25,
+            "recall": 0.05555555555555555,
+            "f1": 0.09090909090909091,
+            "specificity": 0.9826589595375722,
+            "accuracy": 0.8952879581151832,
+            "balanced_accuracy": 0.5191072575465638,
+            "mcc": 0.07797167400174225,
+            "tau": 0.65,
+            "predicted_cliffs": 4,
+            "recall_exact_ci95": [
+              0.0014055561673694222,
+              0.27294359967336845
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 173,
+            "fn": 18,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0,
+            "specificity": 1.0,
+            "accuracy": 0.9057591623036649,
+            "balanced_accuracy": 0.5,
+            "mcc": null,
+            "tau": 1.0,
+            "predicted_cliffs": 0,
+            "recall_exact_ci95": [
+              0.0,
+              0.1853019681378522
+            ]
+          },
+          "average_precision": 0.17485649604402448,
+          "roc_auc": 0.6926782273603083,
+          "direction_accuracy_secondary": {
+            "n": 191,
+            "value": 0.5863874345549738
+          }
+        },
+        "rel_siamese": {
+          "tau_val": {
+            "tp": 5,
+            "fp": 5,
+            "tn": 168,
+            "fn": 13,
+            "precision": 0.5,
+            "recall": 0.2777777777777778,
+            "f1": 0.35714285714285715,
+            "specificity": 0.9710982658959537,
+            "accuracy": 0.9057591623036649,
+            "balanced_accuracy": 0.6244380218368657,
+            "mcc": 0.32643980590129323,
+            "tau": 1.0,
+            "predicted_cliffs": 10,
+            "recall_exact_ci95": [
+              0.09694921252555934,
+              0.5348019655830561
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 5,
+            "fp": 5,
+            "tn": 168,
+            "fn": 13,
+            "precision": 0.5,
+            "recall": 0.2777777777777778,
+            "f1": 0.35714285714285715,
+            "specificity": 0.9710982658959537,
+            "accuracy": 0.9057591623036649,
+            "balanced_accuracy": 0.6244380218368657,
+            "mcc": 0.32643980590129323,
+            "tau": 1.0,
+            "predicted_cliffs": 10,
+            "recall_exact_ci95": [
+              0.09694921252555934,
+              0.5348019655830561
+            ]
+          },
+          "average_precision": 0.3652166884739053,
+          "roc_auc": 0.8044315992292871,
+          "direction_accuracy_secondary": {
+            "n": 191,
+            "value": 0.675392670157068
+          }
+        },
+        "knn_sim": {
+          "tau_val": {
+            "tp": 4,
+            "fp": 9,
+            "tn": 164,
+            "fn": 14,
+            "precision": 0.3076923076923077,
+            "recall": 0.2222222222222222,
+            "f1": 0.25806451612903225,
+            "specificity": 0.9479768786127167,
+            "accuracy": 0.8795811518324608,
+            "balanced_accuracy": 0.5850995504174694,
+            "mcc": 0.19743988444580557,
+            "tau": 0.5,
+            "predicted_cliffs": 13,
+            "recall_exact_ci95": [
+              0.0640920477176665,
+              0.4763727657364801
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 1,
+            "fp": 0,
+            "tn": 173,
+            "fn": 17,
+            "precision": 1.0,
+            "recall": 0.05555555555555555,
+            "f1": 0.10526315789473684,
+            "specificity": 1.0,
+            "accuracy": 0.9109947643979057,
+            "balanced_accuracy": 0.5277777777777778,
+            "mcc": 0.22491063852480928,
+            "tau": 1.0,
+            "predicted_cliffs": 1,
+            "recall_exact_ci95": [
+              0.0014055561673694222,
+              0.27294359967336845
+            ]
+          },
+          "average_precision": 0.30709197670074995,
+          "roc_auc": 0.7241490044958253,
+          "direction_accuracy_secondary": {
+            "n": 191,
+            "value": 0.6492146596858639
+          }
+        }
+      },
+      "posthoc_setting_specific_tau": {
+        "note": "POST-HOC sensitivity (protocol deviation disclosed): tau chosen on the matching validation pair type only; does not affect the declared verdict",
+        "thresholds": {
+          "chemprop_abs": 0.35,
+          "rel_siamese": 1.35,
+          "knn_sim": 0.65
+        },
+        "models": {
+          "chemprop_abs": {
+            "tp": 6,
+            "fp": 24,
+            "tn": 149,
+            "fn": 12,
+            "precision": 0.2,
+            "recall": 0.3333333333333333,
+            "f1": 0.25,
+            "specificity": 0.861271676300578,
+            "accuracy": 0.8115183246073299,
+            "balanced_accuracy": 0.5973025048169557,
+            "mcc": 0.1562570981166371,
+            "tau": 0.35
+          },
+          "rel_siamese": {
+            "tp": 4,
+            "fp": 1,
+            "tn": 172,
+            "fn": 14,
+            "precision": 0.8,
+            "recall": 0.2222222222222222,
+            "f1": 0.34782608695652173,
+            "specificity": 0.9942196531791907,
+            "accuracy": 0.9214659685863874,
+            "balanced_accuracy": 0.6082209377007064,
+            "mcc": 0.396058299201248,
+            "tau": 1.35
+          },
+          "knn_sim": {
+            "tp": 3,
+            "fp": 1,
+            "tn": 172,
+            "fn": 15,
+            "precision": 0.75,
+            "recall": 0.16666666666666666,
+            "f1": 0.2727272727272727,
+            "specificity": 0.9942196531791907,
+            "accuracy": 0.9162303664921466,
+            "balanced_accuracy": 0.5804431599229287,
+            "mcc": 0.32826729978884767,
+            "tau": 0.65
+          }
+        }
+      },
+      "uncertainty": {
+        "cluster_unit": "connected_components_of_pair_graph",
+        "n_clusters": 21,
+        "n_resamples": 2000,
+        "resamples_without_positives": 8,
+        "metrics": {
+          "chemprop_abs|ap": {
+            "ci95": [
+              0.07367407042601715,
+              0.47381179101413123
+            ],
+            "n_valid_resamples": 1992
+          },
+          "chemprop_abs|roc": {
+            "ci95": [
+              0.5004180151024812,
+              0.830382194902674
+            ],
+            "n_valid_resamples": 1992
+          },
+          "chemprop_abs|precision|tau_val": {
+            "ci95": [
+              0.0,
+              0.8
+            ],
+            "n_valid_resamples": 1979
+          },
+          "chemprop_abs|recall|tau_val": {
+            "ci95": [
+              0.0,
+              0.25511363636363427
+            ],
+            "n_valid_resamples": 1992
+          },
+          "chemprop_abs|f1|tau_val": {
+            "ci95": [
+              0.0,
+              0.35294117647058826
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|precision|tau_fixed_1.0": {
+            "ci95": [
+              null,
+              null
+            ],
+            "n_valid_resamples": 0
+          },
+          "chemprop_abs|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n_valid_resamples": 1992
+          },
+          "chemprop_abs|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n_valid_resamples": 1992
+          },
+          "rel_siamese|ap": {
+            "ci95": [
+              0.18231556862440512,
+              0.7482021396396393
+            ],
+            "n_valid_resamples": 1992
+          },
+          "rel_siamese|roc": {
+            "ci95": [
+              0.6388888888888888,
+              0.9346879908179291
+            ],
+            "n_valid_resamples": 1992
+          },
+          "rel_siamese|precision|tau_val": {
+            "ci95": [
+              0.0,
+              0.9199300699300681
+            ],
+            "n_valid_resamples": 1970
+          },
+          "rel_siamese|recall|tau_val": {
+            "ci95": [
+              0.0,
+              0.75
+            ],
+            "n_valid_resamples": 1992
+          },
+          "rel_siamese|f1|tau_val": {
+            "ci95": [
+              0.0,
+              0.6877693965517242
+            ],
+            "n_valid_resamples": 1996
+          },
+          "rel_siamese|precision|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.9199300699300681
+            ],
+            "n_valid_resamples": 1970
+          },
+          "rel_siamese|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.75
+            ],
+            "n_valid_resamples": 1992
+          },
+          "rel_siamese|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.6877693965517242
+            ],
+            "n_valid_resamples": 1996
+          },
+          "knn_sim|ap": {
+            "ci95": [
+              0.10279842014980543,
+              0.7834623659448876
+            ],
+            "n_valid_resamples": 1992
+          },
+          "knn_sim|roc": {
+            "ci95": [
+              0.6126371014306795,
+              0.9211018105158729
+            ],
+            "n_valid_resamples": 1992
+          },
+          "knn_sim|precision|tau_val": {
+            "ci95": [
+              0.0,
+              0.7777777777777778
+            ],
+            "n_valid_resamples": 1998
+          },
+          "knn_sim|recall|tau_val": {
+            "ci95": [
+              0.0,
+              0.75
+            ],
+            "n_valid_resamples": 1992
+          },
+          "knn_sim|f1|tau_val": {
+            "ci95": [
+              0.0,
+              0.6666666666666666
+            ],
+            "n_valid_resamples": 1998
+          },
+          "knn_sim|precision|tau_fixed_1.0": {
+            "ci95": [
+              1.0,
+              1.0
+            ],
+            "n_valid_resamples": 1261
+          },
+          "knn_sim|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.25511363636363427
+            ],
+            "n_valid_resamples": 1992
+          },
+          "knn_sim|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.40642857142856886
+            ],
+            "n_valid_resamples": 1992
+          }
+        },
+        "paired_differences_rel_minus_chemprop": {
+          "ap": {
+            "ci95": [
+              0.04069659533471066,
+              0.4236583028429071
+            ],
+            "n_valid_resamples": 1992
+          },
+          "roc": {
+            "ci95": [
+              0.01335758835758833,
+              0.23840216519647148
+            ],
+            "n_valid_resamples": 1992
+          },
+          "f1|tau_val": {
+            "ci95": [
+              0.0,
+              0.4650090299277606
+            ],
+            "n_valid_resamples": 1996
+          },
+          "precision|tau_val": {
+            "ci95": [
+              -0.16666666666666663,
+              0.6666666666666666
+            ],
+            "n_valid_resamples": 1952
+          },
+          "recall|tau_val": {
+            "ci95": [
+              0.0,
+              0.5
+            ],
+            "n_valid_resamples": 1992
+          },
+          "f1|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.6879849137931032
+            ],
+            "n_valid_resamples": 1992
+          },
+          "precision|tau_fixed_1.0": {
+            "ci95": [
+              null,
+              null
+            ],
+            "n_valid_resamples": 0
+          },
+          "recall|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.75
+            ],
+            "n_valid_resamples": 1992
+          }
+        }
+      },
+      "matched_pair_discordance_on_true_cliffs": {
+        "tau_val": {
+          "rel_detects_chemprop_misses": 4,
+          "chemprop_detects_rel_misses": 0,
+          "both_detect": 1,
+          "neither_detects": 13
+        },
+        "tau_fixed_1.0": {
+          "rel_detects_chemprop_misses": 5,
+          "chemprop_detects_rel_misses": 0,
+          "both_detect": 0,
+          "neither_detects": 13
+        }
+      }
+    },
+    "A_test_test|sim>=0.6": {
+      "n_pairs": 476,
+      "n_cliffs": 60,
+      "prevalence": 0.12605042016806722,
+      "n_distinct_molecules_involved": 137,
+      "n_distinct_query_molecules": null,
+      "majority_class_baseline": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 416,
+        "fn": 60,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "specificity": 1.0,
+        "accuracy": 0.8739495798319328,
+        "balanced_accuracy": 0.5,
+        "mcc": null,
+        "note": "predicts 'no cliff' for every pair: accuracy = 1 - prevalence, recall 0, precision undefined; chance AP = prevalence, ROC-AUC 0.5"
+      },
+      "models": {
+        "chemprop_abs": {
+          "tau_val": {
+            "tp": 6,
+            "fp": 11,
+            "tn": 405,
+            "fn": 54,
+            "precision": 0.35294117647058826,
+            "recall": 0.1,
+            "f1": 0.15584415584415584,
+            "specificity": 0.9735576923076923,
+            "accuracy": 0.8634453781512605,
+            "balanced_accuracy": 0.5367788461538462,
+            "mcc": 0.1315587028960544,
+            "tau": 0.65,
+            "predicted_cliffs": 17,
+            "recall_exact_ci95": [
+              0.03759126910856603,
+              0.20505773670806393
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 416,
+            "fn": 60,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0,
+            "specificity": 1.0,
+            "accuracy": 0.8739495798319328,
+            "balanced_accuracy": 0.5,
+            "mcc": null,
+            "tau": 1.0,
+            "predicted_cliffs": 0,
+            "recall_exact_ci95": [
+              0.0,
+              0.059629492286166916
+            ]
+          },
+          "average_precision": 0.19728133340836923,
+          "roc_auc": 0.6387019230769231,
+          "direction_accuracy_secondary": {
+            "n": 476,
+            "value": 0.6281512605042017
+          }
+        },
+        "rel_siamese": {
+          "tau_val": {
+            "tp": 9,
+            "fp": 16,
+            "tn": 400,
+            "fn": 51,
+            "precision": 0.36,
+            "recall": 0.15,
+            "f1": 0.21176470588235294,
+            "specificity": 0.9615384615384616,
+            "accuracy": 0.8592436974789915,
+            "balanced_accuracy": 0.5557692307692308,
+            "mcc": 0.16595435937181022,
+            "tau": 1.0,
+            "predicted_cliffs": 25,
+            "recall_exact_ci95": [
+              0.07095619525709115,
+              0.2657404477572951
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 9,
+            "fp": 16,
+            "tn": 400,
+            "fn": 51,
+            "precision": 0.36,
+            "recall": 0.15,
+            "f1": 0.21176470588235294,
+            "specificity": 0.9615384615384616,
+            "accuracy": 0.8592436974789915,
+            "balanced_accuracy": 0.5557692307692308,
+            "mcc": 0.16595435937181022,
+            "tau": 1.0,
+            "predicted_cliffs": 25,
+            "recall_exact_ci95": [
+              0.07095619525709115,
+              0.2657404477572951
+            ]
+          },
+          "average_precision": 0.2626881214177995,
+          "roc_auc": 0.7156250000000001,
+          "direction_accuracy_secondary": {
+            "n": 476,
+            "value": 0.7331932773109243
+          }
+        },
+        "knn_sim": {
+          "tau_val": {
+            "tp": 17,
+            "fp": 41,
+            "tn": 375,
+            "fn": 43,
+            "precision": 0.29310344827586204,
+            "recall": 0.2833333333333333,
+            "f1": 0.288135593220339,
+            "specificity": 0.9014423076923077,
+            "accuracy": 0.8235294117647058,
+            "balanced_accuracy": 0.5923878205128206,
+            "mcc": 0.1874842848179937,
+            "tau": 0.5,
+            "predicted_cliffs": 58,
+            "recall_exact_ci95": [
+              0.17450528351437508,
+              0.41443606894983004
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 3,
+            "fp": 2,
+            "tn": 414,
+            "fn": 57,
+            "precision": 0.6,
+            "recall": 0.05,
+            "f1": 0.09230769230769231,
+            "specificity": 0.9951923076923077,
+            "accuracy": 0.8760504201680672,
+            "balanced_accuracy": 0.5225961538461539,
+            "mcc": 0.1471266523690886,
+            "tau": 1.0,
+            "predicted_cliffs": 5,
+            "recall_exact_ci95": [
+              0.010432329644348225,
+              0.13924324672107277
+            ]
+          },
+          "average_precision": 0.28735826599340647,
+          "roc_auc": 0.7258814102564103,
+          "direction_accuracy_secondary": {
+            "n": 476,
+            "value": 0.6701680672268907
+          }
+        }
+      },
+      "posthoc_setting_specific_tau": {
+        "note": "POST-HOC sensitivity (protocol deviation disclosed): tau chosen on the matching validation pair type only; does not affect the declared verdict",
+        "thresholds": {
+          "chemprop_abs": 0.35,
+          "rel_siamese": 1.35,
+          "knn_sim": 0.65
+        },
+        "models": {
+          "chemprop_abs": {
+            "tp": 19,
+            "fp": 89,
+            "tn": 327,
+            "fn": 41,
+            "precision": 0.17592592592592593,
+            "recall": 0.31666666666666665,
+            "f1": 0.2261904761904762,
+            "specificity": 0.7860576923076923,
+            "accuracy": 0.726890756302521,
+            "balanced_accuracy": 0.5513621794871795,
+            "mcc": 0.08140666124479352,
+            "tau": 0.35
+          },
+          "rel_siamese": {
+            "tp": 7,
+            "fp": 7,
+            "tn": 409,
+            "fn": 53,
+            "precision": 0.5,
+            "recall": 0.11666666666666667,
+            "f1": 0.1891891891891892,
+            "specificity": 0.9831730769230769,
+            "accuracy": 0.8739495798319328,
+            "balanced_accuracy": 0.5499198717948718,
+            "mcc": 0.19612851581652965,
+            "tau": 1.35
+          },
+          "knn_sim": {
+            "tp": 11,
+            "fp": 14,
+            "tn": 402,
+            "fn": 49,
+            "precision": 0.44,
+            "recall": 0.18333333333333332,
+            "f1": 0.25882352941176473,
+            "specificity": 0.9663461538461539,
+            "accuracy": 0.8676470588235294,
+            "balanced_accuracy": 0.5748397435897435,
+            "mcc": 0.22270312019148095,
+            "tau": 0.65
+          }
+        }
+      },
+      "uncertainty": {
+        "cluster_unit": "connected_components_of_pair_graph",
+        "n_clusters": 12,
+        "n_resamples": 2000,
+        "resamples_without_positives": 0,
+        "metrics": {
+          "chemprop_abs|ap": {
+            "ci95": [
+              0.08812963718079848,
+              0.30079779571479726
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|roc": {
+            "ci95": [
+              0.46890049140049145,
+              0.7306236746465852
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|precision|tau_val": {
+            "ci95": [
+              0.0,
+              0.48
+            ],
+            "n_valid_resamples": 1997
+          },
+          "chemprop_abs|recall|tau_val": {
+            "ci95": [
+              0.0,
+              0.32727272727272727
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|f1|tau_val": {
+            "ci95": [
+              0.0,
+              0.38095238095238093
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|precision|tau_fixed_1.0": {
+            "ci95": [
+              null,
+              null
+            ],
+            "n_valid_resamples": 0
+          },
+          "chemprop_abs|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|ap": {
+            "ci95": [
+              0.1543555156617394,
+              0.5499203803584848
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|roc": {
+            "ci95": [
+              0.6091868908131628,
+              0.8298286747257606
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|precision|tau_val": {
+            "ci95": [
+              0.14285714285714285,
+              0.6
+            ],
+            "n_valid_resamples": 1926
+          },
+          "rel_siamese|recall|tau_val": {
+            "ci95": [
+              0.0,
+              0.3888888888888889
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|f1|tau_val": {
+            "ci95": [
+              0.0,
+              0.42
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|precision|tau_fixed_1.0": {
+            "ci95": [
+              0.14285714285714285,
+              0.6
+            ],
+            "n_valid_resamples": 1926
+          },
+          "rel_siamese|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.3888888888888889
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.42
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|ap": {
+            "ci95": [
+              0.10769302417978947,
+              0.5502815122552357
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|roc": {
+            "ci95": [
+              0.577832071692044,
+              0.8727374471131636
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|precision|tau_val": {
+            "ci95": [
+              0.058823529411764705,
+              0.5217391304347826
+            ],
+            "n_valid_resamples": 1998
+          },
+          "knn_sim|recall|tau_val": {
+            "ci95": [
+              0.11099290780141845,
+              0.5789473684210527
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|f1|tau_val": {
+            "ci95": [
+              0.07543675751222921,
+              0.525
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|precision|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.75
+            ],
+            "n_valid_resamples": 1773
+          },
+          "knn_sim|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.16363636363636364
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.26666666666666666
+            ],
+            "n_valid_resamples": 2000
+          }
+        },
+        "paired_differences_rel_minus_chemprop": {
+          "ap": {
+            "ci95": [
+              0.024661719531819695,
+              0.2714827002791116
+            ],
+            "n_valid_resamples": 2000
+          },
+          "roc": {
+            "ci95": [
+              0.04409529767401883,
+              0.15836388074291305
+            ],
+            "n_valid_resamples": 2000
+          },
+          "f1|tau_val": {
+            "ci95": [
+              0.0,
+              0.2564102564102564
+            ],
+            "n_valid_resamples": 2000
+          },
+          "precision|tau_val": {
+            "ci95": [
+              -0.040000000000000036,
+              0.25
+            ],
+            "n_valid_resamples": 1926
+          },
+          "recall|tau_val": {
+            "ci95": [
+              0.0,
+              0.3333333333333333
+            ],
+            "n_valid_resamples": 2000
+          },
+          "f1|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.42
+            ],
+            "n_valid_resamples": 2000
+          },
+          "precision|tau_fixed_1.0": {
+            "ci95": [
+              null,
+              null
+            ],
+            "n_valid_resamples": 0
+          },
+          "recall|tau_fixed_1.0": {
+            "ci95": [
+              0.0,
+              0.3888888888888889
+            ],
+            "n_valid_resamples": 2000
+          }
+        }
+      },
+      "matched_pair_discordance_on_true_cliffs": {
+        "tau_val": {
+          "rel_detects_chemprop_misses": 7,
+          "chemprop_detects_rel_misses": 4,
+          "both_detect": 2,
+          "neither_detects": 47
+        },
+        "tau_fixed_1.0": {
+          "rel_detects_chemprop_misses": 9,
+          "chemprop_detects_rel_misses": 0,
+          "both_detect": 0,
+          "neither_detects": 51
+        }
+      }
+    },
+    "B_test_train|sim>=0.8": {
+      "n_pairs": 220,
+      "n_cliffs": 14,
+      "prevalence": 0.06363636363636363,
+      "n_distinct_molecules_involved": 227,
+      "n_distinct_query_molecules": 83,
+      "majority_class_baseline": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 206,
+        "fn": 14,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "specificity": 1.0,
+        "accuracy": 0.9363636363636364,
+        "balanced_accuracy": 0.5,
+        "mcc": null,
+        "note": "predicts 'no cliff' for every pair: accuracy = 1 - prevalence, recall 0, precision undefined; chance AP = prevalence, ROC-AUC 0.5"
+      },
+      "models": {
+        "chemprop_abs": {
+          "tau_val": {
+            "tp": 9,
+            "fp": 28,
+            "tn": 178,
+            "fn": 5,
+            "precision": 0.24324324324324326,
+            "recall": 0.6428571428571429,
+            "f1": 0.35294117647058826,
+            "specificity": 0.8640776699029126,
+            "accuracy": 0.85,
+            "balanced_accuracy": 0.7534674063800277,
+            "mcc": 0.33084405695795466,
+            "tau": 0.65,
+            "predicted_cliffs": 37,
+            "recall_exact_ci95": [
+              0.3513801106159917,
+              0.8724015701408404
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 6,
+            "fp": 3,
+            "tn": 203,
+            "fn": 8,
+            "precision": 0.6666666666666666,
+            "recall": 0.42857142857142855,
+            "f1": 0.5217391304347826,
+            "specificity": 0.9854368932038835,
+            "accuracy": 0.95,
+            "balanced_accuracy": 0.707004160887656,
+            "mcc": 0.5102044196870561,
+            "tau": 1.0,
+            "predicted_cliffs": 9,
+            "recall_exact_ci95": [
+              0.1766110899821179,
+              0.7113905999616925
+            ]
+          },
+          "average_precision": 0.5704528763769889,
+          "roc_auc": 0.85748959778086,
+          "direction_accuracy_secondary": {
+            "n": 219,
+            "value": 0.730593607305936
+          }
+        },
+        "rel_siamese": {
+          "tau_val": {
+            "tp": 5,
+            "fp": 7,
+            "tn": 199,
+            "fn": 9,
+            "precision": 0.4166666666666667,
+            "recall": 0.35714285714285715,
+            "f1": 0.38461538461538464,
+            "specificity": 0.9660194174757282,
+            "accuracy": 0.9272727272727272,
+            "balanced_accuracy": 0.6615811373092927,
+            "mcc": 0.34737294759575443,
+            "tau": 1.0,
+            "predicted_cliffs": 12,
+            "recall_exact_ci95": [
+              0.1275984298591596,
+              0.6486198893840083
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 5,
+            "fp": 7,
+            "tn": 199,
+            "fn": 9,
+            "precision": 0.4166666666666667,
+            "recall": 0.35714285714285715,
+            "f1": 0.38461538461538464,
+            "specificity": 0.9660194174757282,
+            "accuracy": 0.9272727272727272,
+            "balanced_accuracy": 0.6615811373092927,
+            "mcc": 0.34737294759575443,
+            "tau": 1.0,
+            "predicted_cliffs": 12,
+            "recall_exact_ci95": [
+              0.1275984298591596,
+              0.6486198893840083
+            ]
+          },
+          "average_precision": 0.4662230800675117,
+          "roc_auc": 0.7604022191400832,
+          "direction_accuracy_secondary": {
+            "n": 219,
+            "value": 0.7442922374429224
+          }
+        },
+        "knn_sim": {
+          "tau_val": {
+            "tp": 11,
+            "fp": 27,
+            "tn": 179,
+            "fn": 3,
+            "precision": 0.2894736842105263,
+            "recall": 0.7857142857142857,
+            "f1": 0.4230769230769231,
+            "specificity": 0.8689320388349514,
+            "accuracy": 0.8636363636363636,
+            "balanced_accuracy": 0.8273231622746186,
+            "mcc": 0.42274343275864945,
+            "tau": 0.5,
+            "predicted_cliffs": 38,
+            "recall_exact_ci95": [
+              0.4920243229515281,
+              0.9534207121101327
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 5,
+            "fp": 1,
+            "tn": 205,
+            "fn": 9,
+            "precision": 0.8333333333333334,
+            "recall": 0.35714285714285715,
+            "f1": 0.5,
+            "specificity": 0.9951456310679612,
+            "accuracy": 0.9545454545454546,
+            "balanced_accuracy": 0.6761442441054092,
+            "mcc": 0.5279752543217926,
+            "tau": 1.0,
+            "predicted_cliffs": 6,
+            "recall_exact_ci95": [
+              0.1275984298591596,
+              0.6486198893840083
+            ]
+          },
+          "average_precision": 0.5966144702632982,
+          "roc_auc": 0.8515950069348127,
+          "direction_accuracy_secondary": {
+            "n": 219,
+            "value": 0.7671232876712328
+          }
+        },
+        "chemprop_predpred(secondary)": {
+          "tau_val": {
+            "tp": 0,
+            "fp": 3,
+            "tn": 203,
+            "fn": 14,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "specificity": 0.9854368932038835,
+            "accuracy": 0.9227272727272727,
+            "balanced_accuracy": 0.49271844660194175,
+            "mcc": -0.03065216594579911,
+            "tau": 0.65,
+            "predicted_cliffs": 3,
+            "recall_exact_ci95": [
+              0.0,
+              0.23163576165011648
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 206,
+            "fn": 14,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0,
+            "specificity": 1.0,
+            "accuracy": 0.9363636363636364,
+            "balanced_accuracy": 0.5,
+            "mcc": null,
+            "tau": 1.0,
+            "predicted_cliffs": 0,
+            "recall_exact_ci95": [
+              0.0,
+              0.23163576165011648
+            ]
+          },
+          "average_precision": 0.19625584472405674,
+          "roc_auc": 0.7600554785020804,
+          "direction_accuracy_secondary": {
+            "n": 219,
+            "value": 0.6027397260273972
+          }
+        },
+        "knn_predpred(secondary)": {
+          "tau_val": {
+            "tp": 0,
+            "fp": 2,
+            "tn": 204,
+            "fn": 14,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "specificity": 0.9902912621359223,
+            "accuracy": 0.9272727272727272,
+            "balanced_accuracy": 0.49514563106796117,
+            "mcc": -0.02496992044542512,
+            "tau": 0.5,
+            "predicted_cliffs": 2,
+            "recall_exact_ci95": [
+              0.0,
+              0.23163576165011648
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 206,
+            "fn": 14,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0,
+            "specificity": 1.0,
+            "accuracy": 0.9363636363636364,
+            "balanced_accuracy": 0.5,
+            "mcc": null,
+            "tau": 1.0,
+            "predicted_cliffs": 0,
+            "recall_exact_ci95": [
+              0.0,
+              0.23163576165011648
+            ]
+          },
+          "average_precision": 0.10920557449183939,
+          "roc_auc": 0.6192787794729542,
+          "direction_accuracy_secondary": {
+            "n": 219,
+            "value": 0.45662100456621
+          }
+        }
+      },
+      "posthoc_setting_specific_tau": {
+        "note": "POST-HOC sensitivity (protocol deviation disclosed): tau chosen on the matching validation pair type only; does not affect the declared verdict",
+        "thresholds": {
+          "chemprop_abs": 0.85,
+          "rel_siamese": 0.75,
+          "knn_sim": 0.8
+        },
+        "models": {
+          "chemprop_abs": {
+            "tp": 7,
+            "fp": 7,
+            "tn": 199,
+            "fn": 7,
+            "precision": 0.5,
+            "recall": 0.5,
+            "f1": 0.5,
+            "specificity": 0.9660194174757282,
+            "accuracy": 0.9363636363636364,
+            "balanced_accuracy": 0.7330097087378641,
+            "mcc": 0.46601941747572817,
+            "tau": 0.85
+          },
+          "rel_siamese": {
+            "tp": 7,
+            "fp": 15,
+            "tn": 191,
+            "fn": 7,
+            "precision": 0.3181818181818182,
+            "recall": 0.5,
+            "f1": 0.3888888888888889,
+            "specificity": 0.9271844660194175,
+            "accuracy": 0.9,
+            "balanced_accuracy": 0.7135922330097088,
+            "mcc": 0.34759149727113403,
+            "tau": 0.75
+          },
+          "knn_sim": {
+            "tp": 7,
+            "fp": 6,
+            "tn": 200,
+            "fn": 7,
+            "precision": 0.5384615384615384,
+            "recall": 0.5,
+            "f1": 0.5185185185185185,
+            "specificity": 0.970873786407767,
+            "accuracy": 0.9409090909090909,
+            "balanced_accuracy": 0.7354368932038835,
+            "mcc": 0.4874670812587687,
+            "tau": 0.8
+          }
+        }
+      },
+      "uncertainty": {
+        "cluster_unit": "query_test_molecule",
+        "n_clusters": 83,
+        "n_resamples": 2000,
+        "resamples_without_positives": 0,
+        "metrics": {
+          "chemprop_abs|ap": {
+            "ci95": [
+              0.3475837341469121,
+              0.8434248366013071
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|roc": {
+            "ci95": [
+              0.7605312763466672,
+              0.9701454292932395
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|precision|tau_val": {
+            "ci95": [
+              0.11428571428571428,
+              0.3783783783783784
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|recall|tau_val": {
+            "ci95": [
+              0.4166666666666667,
+              0.875
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|f1|tau_val": {
+            "ci95": [
+              0.18604651162790697,
+              0.49056603773584906
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|precision|tau_fixed_1.0": {
+            "ci95": [
+              0.3333333333333333,
+              1.0
+            ],
+            "n_valid_resamples": 1999
+          },
+          "chemprop_abs|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.16666666666666666,
+              0.8181818181818182
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.2325134168157424,
+              0.8421052631578947
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|ap": {
+            "ci95": [
+              0.17032814268080623,
+              0.7189343679209113
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|roc": {
+            "ci95": [
+              0.6056564083776027,
+              0.9110718360675959
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|precision|tau_val": {
+            "ci95": [
+              0.09090909090909091,
+              0.8
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|recall|tau_val": {
+            "ci95": [
+              0.07692307692307693,
+              0.6363636363636364
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|f1|tau_val": {
+            "ci95": [
+              0.08695652173913043,
+              0.6428571428571429
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|precision|tau_fixed_1.0": {
+            "ci95": [
+              0.09090909090909091,
+              0.8
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.07692307692307693,
+              0.6363636363636364
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.08695652173913043,
+              0.6428571428571429
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|ap": {
+            "ci95": [
+              0.3803031177462948,
+              0.8712227304714989
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|roc": {
+            "ci95": [
+              0.7440245283018867,
+              0.9849852788208953
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|precision|tau_val": {
+            "ci95": [
+              0.15785361842105264,
+              0.4166666666666667
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|recall|tau_val": {
+            "ci95": [
+              0.6,
+              1.0
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|f1|tau_val": {
+            "ci95": [
+              0.25806451612903225,
+              0.5490196078431373
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|precision|tau_fixed_1.0": {
+            "ci95": [
+              0.5,
+              1.0
+            ],
+            "n_valid_resamples": 1997
+          },
+          "knn_sim|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.11748366013071897,
+              0.7142857142857143
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.19025974025974027,
+              0.8333333333333334
+            ],
+            "n_valid_resamples": 2000
+          }
+        },
+        "paired_differences_rel_minus_chemprop": {
+          "ap": {
+            "ci95": [
+              -0.4869519812482618,
+              0.19745870420669953
+            ],
+            "n_valid_resamples": 2000
+          },
+          "roc": {
+            "ci95": [
+              -0.276088685697294,
+              0.03446697774587217
+            ],
+            "n_valid_resamples": 2000
+          },
+          "f1|tau_val": {
+            "ci95": [
+              -0.23782372598162071,
+              0.29676383458839095
+            ],
+            "n_valid_resamples": 2000
+          },
+          "precision|tau_val": {
+            "ci95": [
+              -0.12500767813267813,
+              0.536254658385093
+            ],
+            "n_valid_resamples": 2000
+          },
+          "recall|tau_val": {
+            "ci95": [
+              -0.5714285714285714,
+              -0.0625
+            ],
+            "n_valid_resamples": 2000
+          },
+          "f1|tau_fixed_1.0": {
+            "ci95": [
+              -0.566670692431562,
+              0.2759508113590259
+            ],
+            "n_valid_resamples": 2000
+          },
+          "precision|tau_fixed_1.0": {
+            "ci95": [
+              -0.8333333333333334,
+              0.25
+            ],
+            "n_valid_resamples": 1999
+          },
+          "recall|tau_fixed_1.0": {
+            "ci95": [
+              -0.5,
+              0.28571428571428575
+            ],
+            "n_valid_resamples": 2000
+          }
+        },
+        "series_cluster_variant_delta_ap": {
+          "n_clusters": 13,
+          "ci95": [
+            -0.273017961674172,
+            0.14988677161529296
+          ],
+          "n_valid_resamples": 2000
+        }
+      },
+      "matched_pair_discordance_on_true_cliffs": {
+        "tau_val": {
+          "rel_detects_chemprop_misses": 0,
+          "chemprop_detects_rel_misses": 4,
+          "both_detect": 5,
+          "neither_detects": 5
+        },
+        "tau_fixed_1.0": {
+          "rel_detects_chemprop_misses": 2,
+          "chemprop_detects_rel_misses": 3,
+          "both_detect": 3,
+          "neither_detects": 6
+        }
+      }
+    },
+    "B_test_train|sim>=0.7": {
+      "n_pairs": 1262,
+      "n_cliffs": 127,
+      "prevalence": 0.10063391442155309,
+      "n_distinct_molecules_involved": 535,
+      "n_distinct_query_molecules": 133,
+      "majority_class_baseline": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 1135,
+        "fn": 127,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "specificity": 1.0,
+        "accuracy": 0.8993660855784469,
+        "balanced_accuracy": 0.5,
+        "mcc": null,
+        "note": "predicts 'no cliff' for every pair: accuracy = 1 - prevalence, recall 0, precision undefined; chance AP = prevalence, ROC-AUC 0.5"
+      },
+      "models": {
+        "chemprop_abs": {
+          "tau_val": {
+            "tp": 74,
+            "fp": 175,
+            "tn": 960,
+            "fn": 53,
+            "precision": 0.2971887550200803,
+            "recall": 0.5826771653543307,
+            "f1": 0.39361702127659576,
+            "specificity": 0.8458149779735683,
+            "accuracy": 0.8193343898573693,
+            "balanced_accuracy": 0.7142460716639495,
+            "mcc": 0.3239203688431857,
+            "tau": 0.65,
+            "predicted_cliffs": 249,
+            "recall_exact_ci95": [
+              0.4918938616314553,
+              0.6695147215599176
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 28,
+            "fp": 30,
+            "tn": 1105,
+            "fn": 99,
+            "precision": 0.4827586206896552,
+            "recall": 0.2204724409448819,
+            "f1": 0.3027027027027027,
+            "specificity": 0.973568281938326,
+            "accuracy": 0.8977812995245642,
+            "balanced_accuracy": 0.597020361441604,
+            "mcc": 0.2787824528515363,
+            "tau": 1.0,
+            "predicted_cliffs": 58,
+            "recall_exact_ci95": [
+              0.15177948210404973,
+              0.3026400468587664
+            ]
+          },
+          "average_precision": 0.386645837732054,
+          "roc_auc": 0.8061257761282044,
+          "direction_accuracy_secondary": {
+            "n": 1260,
+            "value": 0.7515873015873016
+          }
+        },
+        "rel_siamese": {
+          "tau_val": {
+            "tp": 35,
+            "fp": 42,
+            "tn": 1093,
+            "fn": 92,
+            "precision": 0.45454545454545453,
+            "recall": 0.2755905511811024,
+            "f1": 0.3431372549019608,
+            "specificity": 0.9629955947136564,
+            "accuracy": 0.8938193343898574,
+            "balanced_accuracy": 0.6192930729473793,
+            "mcc": 0.2998751478827135,
+            "tau": 1.0,
+            "predicted_cliffs": 77,
+            "recall_exact_ci95": [
+              0.2000556581628716,
+              0.36189451358715113
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 35,
+            "fp": 42,
+            "tn": 1093,
+            "fn": 92,
+            "precision": 0.45454545454545453,
+            "recall": 0.2755905511811024,
+            "f1": 0.3431372549019608,
+            "specificity": 0.9629955947136564,
+            "accuracy": 0.8938193343898574,
+            "balanced_accuracy": 0.6192930729473793,
+            "mcc": 0.2998751478827135,
+            "tau": 1.0,
+            "predicted_cliffs": 77,
+            "recall_exact_ci95": [
+              0.2000556581628716,
+              0.36189451358715113
+            ]
+          },
+          "average_precision": 0.3959615137422075,
+          "roc_auc": 0.7608241701064901,
+          "direction_accuracy_secondary": {
+            "n": 1260,
+            "value": 0.7206349206349206
+          }
+        },
+        "knn_sim": {
+          "tau_val": {
+            "tp": 88,
+            "fp": 206,
+            "tn": 929,
+            "fn": 39,
+            "precision": 0.29931972789115646,
+            "recall": 0.6929133858267716,
+            "f1": 0.4180522565320665,
+            "specificity": 0.8185022026431719,
+            "accuracy": 0.805863708399366,
+            "balanced_accuracy": 0.7557077942349717,
+            "mcc": 0.36396733522724967,
+            "tau": 0.5,
+            "predicted_cliffs": 294,
+            "recall_exact_ci95": [
+              0.6049080247226808,
+              0.7716780743338929
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 34,
+            "fp": 20,
+            "tn": 1115,
+            "fn": 93,
+            "precision": 0.6296296296296297,
+            "recall": 0.2677165354330709,
+            "f1": 0.3756906077348066,
+            "specificity": 0.9823788546255506,
+            "accuracy": 0.910459587955626,
+            "balanced_accuracy": 0.6250476950293108,
+            "mcc": 0.37177067568851685,
+            "tau": 1.0,
+            "predicted_cliffs": 54,
+            "recall_exact_ci95": [
+              0.19306195139255147,
+              0.35352397667245644
+            ]
+          },
+          "average_precision": 0.4610590549124115,
+          "roc_auc": 0.8251413507232301,
+          "direction_accuracy_secondary": {
+            "n": 1260,
+            "value": 0.796031746031746
+          }
+        },
+        "chemprop_predpred(secondary)": {
+          "tau_val": {
+            "tp": 2,
+            "fp": 15,
+            "tn": 1120,
+            "fn": 125,
+            "precision": 0.11764705882352941,
+            "recall": 0.015748031496062992,
+            "f1": 0.027777777777777776,
+            "specificity": 0.986784140969163,
+            "accuracy": 0.8890649762282092,
+            "balanced_accuracy": 0.501266086232613,
+            "mcc": 0.006608211536576444,
+            "tau": 0.65,
+            "predicted_cliffs": 17,
+            "recall_exact_ci95": [
+              0.0019128821227939314,
+              0.05572908669409177
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 1135,
+            "fn": 127,
+            "precision": null,
+            "recall": 0.0,
+            "f1": 0.0,
+            "specificity": 1.0,
+            "accuracy": 0.8993660855784469,
+            "balanced_accuracy": 0.5,
+            "mcc": null,
+            "tau": 1.0,
+            "predicted_cliffs": 0,
+            "recall_exact_ci95": [
+              0.0,
+              0.028628506134387617
+            ]
+          },
+          "average_precision": 0.157397165534233,
+          "roc_auc": 0.6284852058690902,
+          "direction_accuracy_secondary": {
+            "n": 1260,
+            "value": 0.6015873015873016
+          }
+        },
+        "knn_predpred(secondary)": {
+          "tau_val": {
+            "tp": 25,
+            "fp": 44,
+            "tn": 1091,
+            "fn": 102,
+            "precision": 0.36231884057971014,
+            "recall": 0.1968503937007874,
+            "f1": 0.25510204081632654,
+            "specificity": 0.9612334801762115,
+            "accuracy": 0.884310618066561,
+            "balanced_accuracy": 0.5790419369384995,
+            "mcc": 0.20919080631156026,
+            "tau": 0.5,
+            "predicted_cliffs": 69,
+            "recall_exact_ci95": [
+              0.13162845056497974,
+              0.2767242161637059
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 3,
+            "fp": 2,
+            "tn": 1133,
+            "fn": 124,
+            "precision": 0.6,
+            "recall": 0.023622047244094488,
+            "f1": 0.045454545454545456,
+            "specificity": 0.9982378854625551,
+            "accuracy": 0.9001584786053882,
+            "balanced_accuracy": 0.5109299663533248,
+            "mcc": 0.10468777533066509,
+            "tau": 1.0,
+            "predicted_cliffs": 5,
+            "recall_exact_ci95": [
+              0.004898179856560939,
+              0.06748158871353609
+            ]
+          },
+          "average_precision": 0.25560167285475244,
+          "roc_auc": 0.7135245759478304,
+          "direction_accuracy_secondary": {
+            "n": 1260,
+            "value": 0.580952380952381
+          }
+        }
+      },
+      "posthoc_setting_specific_tau": {
+        "note": "POST-HOC sensitivity (protocol deviation disclosed): tau chosen on the matching validation pair type only; does not affect the declared verdict",
+        "thresholds": {
+          "chemprop_abs": 0.85,
+          "rel_siamese": 0.75,
+          "knn_sim": 0.8
+        },
+        "models": {
+          "chemprop_abs": {
+            "tp": 47,
+            "fp": 67,
+            "tn": 1068,
+            "fn": 80,
+            "precision": 0.41228070175438597,
+            "recall": 0.3700787401574803,
+            "f1": 0.3900414937759336,
+            "specificity": 0.9409691629955947,
+            "accuracy": 0.8835182250396196,
+            "balanced_accuracy": 0.6555239515765375,
+            "mcc": 0.3264402483223594,
+            "tau": 0.85
+          },
+          "rel_siamese": {
+            "tp": 52,
+            "fp": 85,
+            "tn": 1050,
+            "fn": 75,
+            "precision": 0.3795620437956204,
+            "recall": 0.4094488188976378,
+            "f1": 0.3939393939393939,
+            "specificity": 0.9251101321585903,
+            "accuracy": 0.873217115689382,
+            "balanced_accuracy": 0.6672794755281141,
+            "mcc": 0.3235458996226126,
+            "tau": 0.75
+          },
+          "knn_sim": {
+            "tp": 57,
+            "fp": 58,
+            "tn": 1077,
+            "fn": 70,
+            "precision": 0.4956521739130435,
+            "recall": 0.44881889763779526,
+            "f1": 0.47107438016528924,
+            "specificity": 0.9488986784140969,
+            "accuracy": 0.8985736925515055,
+            "balanced_accuracy": 0.698858788025946,
+            "mcc": 0.41576118916855853,
+            "tau": 0.8
+          }
+        }
+      },
+      "uncertainty": {
+        "cluster_unit": "query_test_molecule",
+        "n_clusters": 133,
+        "n_resamples": 2000,
+        "resamples_without_positives": 0,
+        "metrics": {
+          "chemprop_abs|ap": {
+            "ci95": [
+              0.30009242048090295,
+              0.5080681148849522
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|roc": {
+            "ci95": [
+              0.7397466009000465,
+              0.8895925754381387
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|precision|tau_val": {
+            "ci95": [
+              0.21259596456692914,
+              0.38870893318567734
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|recall|tau_val": {
+            "ci95": [
+              0.4470588235294118,
+              0.7375148809523809
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|f1|tau_val": {
+            "ci95": [
+              0.2993619740889987,
+              0.4756114040870138
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|precision|tau_fixed_1.0": {
+            "ci95": [
+              0.3333333333333333,
+              0.6521739130434783
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.12193982220196034,
+              0.3711505418979645
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.18099547511312217,
+              0.45
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|ap": {
+            "ci95": [
+              0.2729171785444392,
+              0.5305774223334905
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|roc": {
+            "ci95": [
+              0.6710794849783112,
+              0.842264163336555
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|precision|tau_val": {
+            "ci95": [
+              0.29212312734082396,
+              0.6363965744400525
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|recall|tau_val": {
+            "ci95": [
+              0.1684140661387983,
+              0.3969519787775431
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|f1|tau_val": {
+            "ci95": [
+              0.22099286907362198,
+              0.45570730624028416
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|precision|tau_fixed_1.0": {
+            "ci95": [
+              0.29212312734082396,
+              0.6363965744400525
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.1684140661387983,
+              0.3969519787775431
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.22099286907362198,
+              0.45570730624028416
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|ap": {
+            "ci95": [
+              0.3581483925534064,
+              0.6190026135658321
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|roc": {
+            "ci95": [
+              0.7572887463974699,
+              0.9156733120677429
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|precision|tau_val": {
+            "ci95": [
+              0.2218634407562314,
+              0.3750215517241378
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|recall|tau_val": {
+            "ci95": [
+              0.5546176886596222,
+              0.8642142142142141
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|f1|tau_val": {
+            "ci95": [
+              0.334175187556122,
+              0.4877014233375482
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|precision|tau_fixed_1.0": {
+            "ci95": [
+              0.46477615694164987,
+              0.8
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.15059841134449303,
+              0.45056890012642214
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.23074324324324325,
+              0.5693456001622059
+            ],
+            "n_valid_resamples": 2000
+          }
+        },
+        "paired_differences_rel_minus_chemprop": {
+          "ap": {
+            "ci95": [
+              -0.14392400497274566,
+              0.14224030994333944
+            ],
+            "n_valid_resamples": 2000
+          },
+          "roc": {
+            "ci95": [
+              -0.15823382442110842,
+              0.045002697969429385
+            ],
+            "n_valid_resamples": 2000
+          },
+          "f1|tau_val": {
+            "ci95": [
+              -0.16046258277888878,
+              0.0690101848115763
+            ],
+            "n_valid_resamples": 2000
+          },
+          "precision|tau_val": {
+            "ci95": [
+              0.025332743134325597,
+              0.31024970530311813
+            ],
+            "n_valid_resamples": 2000
+          },
+          "recall|tau_val": {
+            "ci95": [
+              -0.45745923642871344,
+              -0.18385192642079257
+            ],
+            "n_valid_resamples": 2000
+          },
+          "f1|tau_fixed_1.0": {
+            "ci95": [
+              -0.1372312929525761,
+              0.18990665835375317
+            ],
+            "n_valid_resamples": 2000
+          },
+          "precision|tau_fixed_1.0": {
+            "ci95": [
+              -0.2527571675468791,
+              0.20207571066704152
+            ],
+            "n_valid_resamples": 2000
+          },
+          "recall|tau_fixed_1.0": {
+            "ci95": [
+              -0.1014554163596168,
+              0.1768775510204081
+            ],
+            "n_valid_resamples": 2000
+          }
+        },
+        "series_cluster_variant_delta_ap": {
+          "n_clusters": 14,
+          "ci95": [
+            -0.12595357993913572,
+            0.18696169105854998
+          ],
+          "n_valid_resamples": 2000
+        }
+      },
+      "matched_pair_discordance_on_true_cliffs": {
+        "tau_val": {
+          "rel_detects_chemprop_misses": 3,
+          "chemprop_detects_rel_misses": 42,
+          "both_detect": 32,
+          "neither_detects": 50
+        },
+        "tau_fixed_1.0": {
+          "rel_detects_chemprop_misses": 19,
+          "chemprop_detects_rel_misses": 12,
+          "both_detect": 16,
+          "neither_detects": 80
+        }
+      }
+    },
+    "B_test_train|sim>=0.6": {
+      "n_pairs": 3747,
+      "n_cliffs": 520,
+      "prevalence": 0.13877768881772085,
+      "n_distinct_molecules_involved": 759,
+      "n_distinct_query_molecules": 141,
+      "majority_class_baseline": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 3227,
+        "fn": 520,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "specificity": 1.0,
+        "accuracy": 0.8612223111822792,
+        "balanced_accuracy": 0.5,
+        "mcc": null,
+        "note": "predicts 'no cliff' for every pair: accuracy = 1 - prevalence, recall 0, precision undefined; chance AP = prevalence, ROC-AUC 0.5"
+      },
+      "models": {
+        "chemprop_abs": {
+          "tau_val": {
+            "tp": 303,
+            "fp": 494,
+            "tn": 2733,
+            "fn": 217,
+            "precision": 0.38017565872020076,
+            "recall": 0.5826923076923077,
+            "f1": 0.4601366742596811,
+            "specificity": 0.8469166408428881,
+            "accuracy": 0.8102481985588471,
+            "balanced_accuracy": 0.7148044742675979,
+            "mcc": 0.36293955696164615,
+            "tau": 0.65,
+            "predicted_cliffs": 797,
+            "recall_exact_ci95": [
+              0.5389772561549303,
+              0.6254621139906505
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 158,
+            "fp": 99,
+            "tn": 3128,
+            "fn": 362,
+            "precision": 0.6147859922178989,
+            "recall": 0.3038461538461538,
+            "f1": 0.4066924066924067,
+            "specificity": 0.969321351100093,
+            "accuracy": 0.8769682412596744,
+            "balanced_accuracy": 0.6365837524731234,
+            "mcc": 0.37363789380547247,
+            "tau": 1.0,
+            "predicted_cliffs": 257,
+            "recall_exact_ci95": [
+              0.2645663745783667,
+              0.3453727309976602
+            ]
+          },
+          "average_precision": 0.47339931493148135,
+          "roc_auc": 0.8108149984505733,
+          "direction_accuracy_secondary": {
+            "n": 3745,
+            "value": 0.7527369826435247
+          }
+        },
+        "rel_siamese": {
+          "tau_val": {
+            "tp": 156,
+            "fp": 156,
+            "tn": 3071,
+            "fn": 364,
+            "precision": 0.5,
+            "recall": 0.3,
+            "f1": 0.375,
+            "specificity": 0.9516578865819647,
+            "accuracy": 0.8612223111822792,
+            "balanced_accuracy": 0.6258289432909824,
+            "mcc": 0.31489881903032385,
+            "tau": 1.0,
+            "predicted_cliffs": 312,
+            "recall_exact_ci95": [
+              0.2608842853611327,
+              0.34140681869929357
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 156,
+            "fp": 156,
+            "tn": 3071,
+            "fn": 364,
+            "precision": 0.5,
+            "recall": 0.3,
+            "f1": 0.375,
+            "specificity": 0.9516578865819647,
+            "accuracy": 0.8612223111822792,
+            "balanced_accuracy": 0.6258289432909824,
+            "mcc": 0.31489881903032385,
+            "tau": 1.0,
+            "predicted_cliffs": 312,
+            "recall_exact_ci95": [
+              0.2608842853611327,
+              0.34140681869929357
+            ]
+          },
+          "average_precision": 0.38762093349904087,
+          "roc_auc": 0.7463752353936736,
+          "direction_accuracy_secondary": {
+            "n": 3745,
+            "value": 0.7441922563417891
+          }
+        },
+        "knn_sim": {
+          "tau_val": {
+            "tp": 379,
+            "fp": 730,
+            "tn": 2497,
+            "fn": 141,
+            "precision": 0.3417493237150586,
+            "recall": 0.7288461538461538,
+            "f1": 0.4653161448741559,
+            "specificity": 0.7737837000309885,
+            "accuracy": 0.7675473712303176,
+            "balanced_accuracy": 0.7513149269385712,
+            "mcc": 0.38066790847097076,
+            "tau": 0.5,
+            "predicted_cliffs": 1109,
+            "recall_exact_ci95": [
+              0.6884445989131274,
+              0.7666237020794591
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 194,
+            "fp": 79,
+            "tn": 3148,
+            "fn": 326,
+            "precision": 0.7106227106227107,
+            "recall": 0.3730769230769231,
+            "f1": 0.489281210592686,
+            "specificity": 0.9755190579485591,
+            "accuracy": 0.8919135308246597,
+            "balanced_accuracy": 0.6742979905127411,
+            "mcc": 0.46368954068877,
+            "tau": 1.0,
+            "predicted_cliffs": 273,
+            "recall_exact_ci95": [
+              0.33137220846281923,
+              0.4162332872189523
+            ]
+          },
+          "average_precision": 0.5758744576356384,
+          "roc_auc": 0.8297758098734238,
+          "direction_accuracy_secondary": {
+            "n": 3745,
+            "value": 0.8069425901201602
+          }
+        },
+        "chemprop_predpred(secondary)": {
+          "tau_val": {
+            "tp": 59,
+            "fp": 117,
+            "tn": 3110,
+            "fn": 461,
+            "precision": 0.3352272727272727,
+            "recall": 0.11346153846153846,
+            "f1": 0.16954022988505746,
+            "specificity": 0.9637434149364735,
+            "accuracy": 0.8457432612756872,
+            "balanced_accuracy": 0.538602476699006,
+            "mcc": 0.12615226738615568,
+            "tau": 0.65,
+            "predicted_cliffs": 176,
+            "recall_exact_ci95": [
+              0.08750254423610526,
+              0.14390791441619674
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 6,
+            "fp": 12,
+            "tn": 3215,
+            "fn": 514,
+            "precision": 0.3333333333333333,
+            "recall": 0.011538461538461539,
+            "f1": 0.022304832713754646,
+            "specificity": 0.9962813758909204,
+            "accuracy": 0.8596210301574593,
+            "balanced_accuracy": 0.5039099187146909,
+            "mcc": 0.03909907064488214,
+            "tau": 1.0,
+            "predicted_cliffs": 18,
+            "recall_exact_ci95": [
+              0.004245859325067067,
+              0.02494422263154279
+            ]
+          },
+          "average_precision": 0.23401165894237863,
+          "roc_auc": 0.6545582942003767,
+          "direction_accuracy_secondary": {
+            "n": 3745,
+            "value": 0.6259012016021361
+          }
+        },
+        "knn_predpred(secondary)": {
+          "tau_val": {
+            "tp": 172,
+            "fp": 328,
+            "tn": 2899,
+            "fn": 348,
+            "precision": 0.344,
+            "recall": 0.33076923076923076,
+            "f1": 0.33725490196078434,
+            "specificity": 0.8983576076851565,
+            "accuracy": 0.8195890045369629,
+            "balanced_accuracy": 0.6145634192271936,
+            "mcc": 0.2329437007028388,
+            "tau": 0.5,
+            "predicted_cliffs": 500,
+            "recall_exact_ci95": [
+              0.29043038577812963,
+              0.37304516932476434
+            ]
+          },
+          "tau_fixed_1.0": {
+            "tp": 40,
+            "fp": 37,
+            "tn": 3190,
+            "fn": 480,
+            "precision": 0.5194805194805194,
+            "recall": 0.07692307692307693,
+            "f1": 0.13400335008375208,
+            "specificity": 0.9885342423303378,
+            "accuracy": 0.8620229516946891,
+            "balanced_accuracy": 0.5327286596267073,
+            "mcc": 0.15950745104654107,
+            "tau": 1.0,
+            "predicted_cliffs": 77,
+            "recall_exact_ci95": [
+              0.05552103998744813,
+              0.10327624704445591
+            ]
+          },
+          "average_precision": 0.31369964038215115,
+          "roc_auc": 0.7237074205620844,
+          "direction_accuracy_secondary": {
+            "n": 3745,
+            "value": 0.6440587449933244
+          }
+        }
+      },
+      "posthoc_setting_specific_tau": {
+        "note": "POST-HOC sensitivity (protocol deviation disclosed): tau chosen on the matching validation pair type only; does not affect the declared verdict",
+        "thresholds": {
+          "chemprop_abs": 0.85,
+          "rel_siamese": 0.75,
+          "knn_sim": 0.8
+        },
+        "models": {
+          "chemprop_abs": {
+            "tp": 219,
+            "fp": 210,
+            "tn": 3017,
+            "fn": 301,
+            "precision": 0.5104895104895105,
+            "recall": 0.42115384615384616,
+            "f1": 0.46153846153846156,
+            "specificity": 0.9349240780911063,
+            "accuracy": 0.8636242327195089,
+            "balanced_accuracy": 0.6780389621224763,
+            "mcc": 0.386615593991065,
+            "tau": 0.85
+          },
+          "rel_siamese": {
+            "tp": 220,
+            "fp": 350,
+            "tn": 2877,
+            "fn": 300,
+            "precision": 0.38596491228070173,
+            "recall": 0.4230769230769231,
+            "f1": 0.4036697247706422,
+            "specificity": 0.8915401301518439,
+            "accuracy": 0.8265278889778489,
+            "balanced_accuracy": 0.6573085266143834,
+            "mcc": 0.30285683420840215,
+            "tau": 0.75
+          },
+          "knn_sim": {
+            "tp": 271,
+            "fp": 196,
+            "tn": 3031,
+            "fn": 249,
+            "precision": 0.5802997858672377,
+            "recall": 0.5211538461538462,
+            "f1": 0.5491388044579534,
+            "specificity": 0.9392624728850325,
+            "accuracy": 0.8812383239925273,
+            "balanced_accuracy": 0.7302081595194394,
+            "mcc": 0.48189952784081597,
+            "tau": 0.8
+          }
+        }
+      },
+      "uncertainty": {
+        "cluster_unit": "query_test_molecule",
+        "n_clusters": 141,
+        "n_resamples": 2000,
+        "resamples_without_positives": 0,
+        "metrics": {
+          "chemprop_abs|ap": {
+            "ci95": [
+              0.3753731901485817,
+              0.593769738751086
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|roc": {
+            "ci95": [
+              0.7466099565515483,
+              0.8845624841075509
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|precision|tau_val": {
+            "ci95": [
+              0.31093380317140695,
+              0.44729532163742686
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|recall|tau_val": {
+            "ci95": [
+              0.44906433760381514,
+              0.733836138456653
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|f1|tau_val": {
+            "ci95": [
+              0.3868377192982456,
+              0.5306216843814306
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|precision|tau_fixed_1.0": {
+            "ci95": [
+              0.46386175029268245,
+              0.7533221720903793
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.20199750593824228,
+              0.4366982707215265
+            ],
+            "n_valid_resamples": 2000
+          },
+          "chemprop_abs|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.2887542980646429,
+              0.5310700643730372
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|ap": {
+            "ci95": [
+              0.30810105421042006,
+              0.48510258651696964
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|roc": {
+            "ci95": [
+              0.6726829230477017,
+              0.8166354973247358
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|precision|tau_val": {
+            "ci95": [
+              0.3951528082263284,
+              0.6324116013246448
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|recall|tau_val": {
+            "ci95": [
+              0.2,
+              0.4233901609839014
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|f1|tau_val": {
+            "ci95": [
+              0.27951833723691627,
+              0.4715988891726251
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|precision|tau_fixed_1.0": {
+            "ci95": [
+              0.3951528082263284,
+              0.6324116013246448
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.2,
+              0.4233901609839014
+            ],
+            "n_valid_resamples": 2000
+          },
+          "rel_siamese|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.27951833723691627,
+              0.4715988891726251
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|ap": {
+            "ci95": [
+              0.4586255682134308,
+              0.7220081393596949
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|roc": {
+            "ci95": [
+              0.7555018478384766,
+              0.9158773526203952
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|precision|tau_val": {
+            "ci95": [
+              0.28790958781715215,
+              0.3964772752155662
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|recall|tau_val": {
+            "ci95": [
+              0.5985123070857272,
+              0.883288685260294
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|f1|tau_val": {
+            "ci95": [
+              0.4063640481929973,
+              0.5235638171984045
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|precision|tau_fixed_1.0": {
+            "ci95": [
+              0.5714066608238387,
+              0.8333466453674121
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|recall|tau_fixed_1.0": {
+            "ci95": [
+              0.2517318404035333,
+              0.5281134469010509
+            ],
+            "n_valid_resamples": 2000
+          },
+          "knn_sim|f1|tau_fixed_1.0": {
+            "ci95": [
+              0.35923034697750067,
+              0.632912307016902
+            ],
+            "n_valid_resamples": 2000
+          }
+        },
+        "paired_differences_rel_minus_chemprop": {
+          "ap": {
+            "ci95": [
+              -0.19392101778727833,
+              0.021581223533760508
+            ],
+            "n_valid_resamples": 2000
+          },
+          "roc": {
+            "ci95": [
+              -0.11835282443756595,
+              -0.013894920200147617
+            ],
+            "n_valid_resamples": 2000
+          },
+          "f1|tau_val": {
+            "ci95": [
+              -0.16482711873912495,
+              -0.010269198261956792
+            ],
+            "n_valid_resamples": 2000
+          },
+          "precision|tau_val": {
+            "ci95": [
+              0.01754143587307832,
+              0.24711983621110545
+            ],
+            "n_valid_resamples": 2000
+          },
+          "recall|tau_val": {
+            "ci95": [
+              -0.38750815217391305,
+              -0.20213270579549658
+            ],
+            "n_valid_resamples": 2000
+          },
+          "f1|tau_fixed_1.0": {
+            "ci95": [
+              -0.1396450718219952,
+              0.07679537352321883
+            ],
+            "n_valid_resamples": 2000
+          },
+          "precision|tau_fixed_1.0": {
+            "ci95": [
+              -0.2790612245997027,
+              0.08189258866475506
+            ],
+            "n_valid_resamples": 2000
+          },
+          "recall|tau_fixed_1.0": {
+            "ci95": [
+              -0.10104948302940409,
+              0.08385429779114598
+            ],
+            "n_valid_resamples": 2000
+          }
+        },
+        "series_cluster_variant_delta_ap": {
+          "n_clusters": 14,
+          "ci95": [
+            -0.21205608620399313,
+            0.032696951209716926
+          ],
+          "n_valid_resamples": 2000
+        }
+      },
+      "matched_pair_discordance_on_true_cliffs": {
+        "tau_val": {
+          "rel_detects_chemprop_misses": 13,
+          "chemprop_detects_rel_misses": 160,
+          "both_detect": 143,
+          "neither_detects": 204
+        },
+        "tau_fixed_1.0": {
+          "rel_detects_chemprop_misses": 65,
+          "chemprop_detects_rel_misses": 67,
+          "both_detect": 91,
+          "neither_detects": 297
+        }
+      }
+    }
+  },
+  "decision_rule_outcome": {
+    "verdict": "B",
+    "statement": "No demonstrated improvement over the baseline.",
+    "criteria": {
+      "B_primary_delta_AP_rel_minus_chemprop": -0.10422979630947726,
+      "B_primary_delta_AP_ci95_cluster": [
+        -0.4869519812482618,
+        0.19745870420669953
+      ],
+      "criterion_1_AP_gain_with_CI_excluding_0": false,
+      "B_primary_delta_F1_by_rule": {
+        "tau_val": 0.03167420814479638,
+        "tau_fixed_1.0": -0.13712374581939796
+      },
+      "criterion_2_F1_gain_at_both_thresholds": false,
+      "A_primary_AP": {
+        "chemprop_abs": 0.349047619047619,
+        "rel_siamese": 0.731111111111111,
+        "knn_sim": 0.3311688311688311
+      },
+      "criterion_3_A_not_worse": true,
+      "A_primary_n_positive_cliffs": 5,
+      "A_is_descriptive_only": true
+    }
+  },
+  "leakage_controls": [
+    "held-out activities masked (NaN) in all inference code paths; assertions on finite predictions",
+    "tau chosen only on out-of-fold train-partition validation pairs",
+    "test partition never used in CV folds (asserted: no test rows with fold>=0)",
+    "same split as prior work"
+  ]
+}

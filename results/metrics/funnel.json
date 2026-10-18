@@ -1,0 +1,33 @@
+{
+  "generated_edits": 324,
+  "valid_rdkit": 324,
+  "unique_non_parent": 231,
+  "pass_all_filters": 34,
+  "scored_by_model": 34,
+  "retrospective": {
+    "n_recovered_heldout_measured_analogues": 1,
+    "n_pass_filters": 0,
+    "direction_accuracy": 1.0
+  },
+  "seed": {
+    "id": "moonshot_idx237",
+    "smiles": "CNC(=O)CN1CC(C(=O)Nc2cncc3ccc(NS(C)(=O)=O)cc23)c2cc(Cl)ccc2C1=O",
+    "partition": "test",
+    "measured_pIC50": 7.1774,
+    "postera_ids": [
+      "MAT-POS-2e8b2191-11"
+    ],
+    "all_csv_row": 237
+  },
+  "params": {
+    "max_side_heavy_atoms": 12,
+    "min_scaffold_fraction": 0.6,
+    "max_edit_size_heavy_atoms": 16,
+    "min_precedent_pairs": 2,
+    "min_parent_tanimoto": 0.5,
+    "max_heavy_atom_growth": 8,
+    "max_sa_score": 6.0,
+    "allowed_elements": "C,N,O,F,Cl,Br,S",
+    "fingerprint": "Morgan radius 2, 2048 bits"
+  }
+}

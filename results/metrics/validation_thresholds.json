@@ -1,0 +1,52 @@
+{
+  "description": "Validation-derived cliff-detection thresholds from the reference run: F1-optimal tau per model on out-of-fold train-partition validation pairs (5-fold CV inside the train partition, train-train pairs with Tanimoto>=0.80, 27 cliffs). Used by cliffforge.cliff_detection when the CV fold models are not re-trained locally. tau_val_setting_specific is the POST-HOC sensitivity variant (disclosed in the report).",
+  "n_validation_pairs": 420,
+  "n_validation_cliffs": 27,
+  "tau_val": {
+    "chemprop_abs": 0.65,
+    "rel_siamese": 1.0,
+    "knn_sim": 0.5
+  },
+  "tau_val_setting_specific": {
+    "A_test_test": {
+      "chemprop_abs": 0.35,
+      "rel_siamese": 1.35,
+      "knn_sim": 0.65,
+      "n_val_pairs": 92,
+      "n_val_cliffs": 7
+    },
+    "B_test_train": {
+      "chemprop_abs": 0.85,
+      "rel_siamese": 0.75,
+      "knn_sim": 0.8,
+      "n_val_pairs": 328,
+      "n_val_cliffs": 20
+    }
+  },
+  "validation_diagnostics": {
+    "chemprop_abs": {
+      "tau_val": 0.65,
+      "val_f1_at_tau": 0.38461538461538464,
+      "val_ap": 0.2704785500525527,
+      "val_roc_auc": 0.7778720196022995,
+      "calibration_slope_true_on_pred_delta": 0.6276079735404104,
+      "val_rmse_delta": 0.49508723089577744
+    },
+    "rel_siamese": {
+      "tau_val": 1.0,
+      "val_f1_at_tau": 0.4878048780487805,
+      "val_ap": 0.5266895939378603,
+      "val_roc_auc": 0.8728677787201959,
+      "calibration_slope_true_on_pred_delta": 0.8760290068013659,
+      "val_rmse_delta": 0.4438603911413901
+    },
+    "knn_sim": {
+      "tau_val": 0.5,
+      "val_f1_at_tau": 0.5263157894736842,
+      "val_ap": 0.4744165055867909,
+      "val_roc_auc": 0.8552445575346339,
+      "calibration_slope_true_on_pred_delta": 0.9183564826864726,
+      "val_rmse_delta": 0.43763779781446005
+    }
+  }
+}

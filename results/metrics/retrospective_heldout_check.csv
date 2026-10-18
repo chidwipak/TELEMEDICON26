@@ -1,0 +1,2 @@
+candidate_id,candidate_smiles,transformation,filter_status,filter_reason,measured_delta_vs_seed,predicted_delta_vs_seed,predicted_sd
+moonshot_idx237_c0193,CNC(=O)CN1CC(C(=O)Nc2cncc3ccc(C(C)(C)O)cc23)c2cc(Cl)ccc2C1=O,CS(=O)(=O)N[*:1]>>CC(C)(O)[*:1],rejected,precedent<2,-0.7617,-0.6868,0.0670
