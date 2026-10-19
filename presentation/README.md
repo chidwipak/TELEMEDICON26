@@ -8,6 +8,7 @@ Seven-slide 16:9 pitch deck for **CliffForge**, written in LaTeX Beamer. All dia
 | `main.tex` | deck source (7 slides: cover, problem & validation, solution & innovation, methodology, prototype/proof of concept, validation at scale, impact & next steps) |
 | `references.bib` | verified bibliography (entries copied from the project's research bibliography; only cited works are kept) |
 | `TELEMEDICON26_CliffForge_Pitch.pdf` | compiled deck (committed so it can be viewed without LaTeX) |
+| `speaker_notes_10min.md` | timed speaker script, including the simulation cue and CHAI Discovery closing note |
 | `build.sh` | reproducible build, works from any directory |
 
 ## Build
