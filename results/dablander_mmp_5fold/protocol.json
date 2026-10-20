@@ -1,0 +1,49 @@
+{
+  "dataset": "Dablander COVID Moonshot SARS-CoV-2 Mpro cleaned molecule and MMP tables",
+  "source": "https://github.com/MarkusFerdinandDablander/QSAR-activity-cliff-experiments",
+  "source_commit": "3081a1a40e3f5105a60b6d8b41f1ce69f8a0f453",
+  "source_counts_expected": {
+    "molecules": 1924,
+    "mmps": 12594
+  },
+  "activity": "pIC50 = 6 - log10(IC50 in micromolar)",
+  "cliff": {
+    "positive_abs_delta_gte": 2.0,
+    "negative_abs_delta_lte": 1.0,
+    "intermediate": "exclude only from binary detection",
+    "predicted_abs_delta_gt": 1.5
+  },
+  "splits": {
+    "outer": "molecule-level shuffled KFold",
+    "n_folds": 5,
+    "seed": 17017,
+    "chemprop_internal": "ChemProp 1.6.1 default random 80/10/10 of outer train"
+  },
+  "model_seeds": [
+    0,
+    1,
+    2
+  ],
+  "relative_max_epochs": 70,
+  "relative_batch_size": 32,
+  "chemprop_version": "1.6.1",
+  "chemprop_batch_size": 50,
+  "knn_fingerprint": "Morgan radius 2, 2048 bits, no chirality",
+  "embedded_model_code_sha256": {
+    "src/cliffforge/features.py": "5951069a83e9909b23ca6b90517ec74079b31c9cbd8bd440f0c3bf01b7251150",
+    "src/cliffforge/networks.py": "e52ee2bb5efa557f36c77a2ae9f75ec0ab2795c3d4a49ffe30ad7fa232aa9b71"
+  },
+  "chemprop_max_epochs": 60,
+  "relative_checkpoint_selection": "final checkpoint after 70 epochs",
+  "relative_training_pairs": "Dablander supplied MMP rows with both endpoints in outer train",
+  "chemprop_checkpoint_selection": "best internal validation RMSE over 60 epochs",
+  "lead_top_fraction_per_fold": 0.1,
+  "bootstrap_resamples": 5000,
+  "primary_metrics": [
+    "strict_test_test_AP",
+    "local_reference_mean_Spearman",
+    "lead_top10_mean_measured_delta"
+  ],
+  "contrasts": "CliffForge minus ChemProp and CliffForge minus 5-NN on each primary metric",
+  "multiplicity": "six two-sided Bonferroni-adjusted percentile cluster-bootstrap intervals, FWER 0.05"
+}

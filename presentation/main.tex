@@ -1,7 +1,6 @@
 % !TEX program = pdflatex
-% TELEMEDICON26 - Team Genesis - CliffForge: seven-slide pitch deck (Beamer 16:9, TikZ diagrams).
-% Every number below is taken from results/summary.json and results/metrics/*.json (reference run);
-% scripts/validate_submission.py checks that this file and README.md agree with those files.
+% TELEMEDICON26 -- Team Genesis -- CliffForge: eleven-slide Beamer deck.
+% Diagrams and result tables are native TikZ; the full protein-aware pipeline is proposed.
 \documentclass[aspectratio=169,10pt]{beamer}
 
 \usepackage[T1]{fontenc}
@@ -14,13 +13,13 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,calc,positioning,fit,decorations.pathreplacing}
 \usepackage[style=authoryear-comp,backend=biber,maxcitenames=2,maxbibnames=3,uniquelist=false,uniquename=false,%
-  giveninits=true,useprefix=true,url=false,doi=false,isbn=false,eprint=false]{biblatex}
+  giveninits=true,useprefix=true,url=false,doi=false,isbn=false,eprint=false,hyperref=false]{biblatex}
 \addbibresource{references.bib}
 \DeclareDelimFormat{nameyeardelim}{\addspace}
 \renewcommand*{\finalnamedelim}{\addspace\&\space}
 \renewcommand*{\multinamedelim}{\addcomma\space}
 
-% ---------------------------------------------------------------- palette (restrained, flat)
+% Original deck palette and Beamer treatment.
 \definecolor{navy}{HTML}{1F2A44}
 \definecolor{teal}{HTML}{1B7F8C}
 \definecolor{tealmid}{HTML}{7FB8BF}
@@ -32,7 +31,6 @@
 \definecolor{bgc}{HTML}{FBFCFD}
 \definecolor{amber}{HTML}{B8741A}
 
-% ---------------------------------------------------------------- beamer look
 \usetheme{default}
 \usefonttheme{professionalfonts}
 \setbeamertemplate{navigation symbols}{}
@@ -61,19 +59,15 @@
       {\insertframenumber\,/\,\inserttotalframenumber};
   \end{tikzpicture}}}
 
-% ---------------------------------------------------------------- tikz styles
 \tikzset{
   >={Stealth[length=2mm]},
-  ink/.style={text=navy},
   box/.style={execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000\relax},draw=teal,line width=0.8pt,rounded corners=1.2pt,fill=white,align=center,text=navy,
               font=\footnotesize\bfseries,inner sep=3pt,minimum height=9.5mm},
   boxplan/.style={box,draw=slate,dashed,text=slate,fill=slatelight!50},
   lbl/.style={execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000\relax},font=\scriptsize,text=slate,align=center,inner sep=1pt},
   arr/.style={->,line width=0.8pt,draw=navy!75},
   arrplan/.style={->,line width=0.8pt,draw=slate,dash pattern=on 2.2pt off 1.8pt},
-  panel/.style={draw=greyline,line width=0.5pt,fill=white,inner sep=0pt},
 }
-% flat aromatic ring: \ring{x}{y}{R}{r}
 \newcommand{\ring}[4]{%
   \draw[navy,line width=1pt] ($(#1,#2)+(30:#3)$)--($(#1,#2)+(90:#3)$)--($(#1,#2)+(150:#3)$)--($(#1,#2)+(210:#3)$)--($(#1,#2)+(270:#3)$)--($(#1,#2)+(330:#3)$)--cycle;
   \draw[navy,line width=0.5pt] (#1,#2) circle (#4);}
@@ -83,12 +77,12 @@
 
 \title{CliffForge -- TELEMEDICON26 Pitch Deck}
 \author{Team Genesis: Chidwipak Kuppani, Hrishikesh Kurapati}
-\subject{Relative-affinity molecular analogue prioritization and activity-cliff analysis}
-\keywords{activity cliffs, lead optimization, relative affinity}
+\subject{Relative-Affinity Molecular Analogue Prioritization and Activity-Cliff Analysis}
+\keywords{constrained analogue generation, relative-affinity scoring, uncertainty-aware ranking}
 \date{}
 \begin{document}
 
-% ============================================================== SLIDE 1 - cover
+% ============================================================== 1 -- COVER
 \begin{frame}[plain]
 \begin{tikzpicture}[remember picture,overlay]
   \fill[teal] (current page.north west) rectangle ([xshift=3.2mm]current page.south west);
@@ -98,7 +92,7 @@
 \vspace{10mm}
 {\color{teal}\bfseries\footnotesize TELEMEDICON26 \quad|\quad PROJECT PITCH DECK}\par\vspace{4mm}
 {\color{navy}\fontsize{36}{38}\selectfont\bfseries CliffForge}\par\vspace{3mm}
-{\color{slate}\fontsize{12.5}{15}\selectfont Relative-Affinity Molecular Analogue Prioritization and Activity-Cliff Analysis}\par\vspace{4mm}
+{\color{slate}\fontsize{12.5}{15}\selectfont Relative-Affinity Molecular Analogue\\Prioritization and Activity-Cliff Analysis}\par\vspace{4mm}
 {\color{slate}\footnotesize Constrained analogue generation \;\textperiodcentered\; relative-affinity scoring \;\textperiodcentered\; uncertainty-aware ranking}\par\vspace{9mm}
 {\color{navy}\bfseries Team Genesis}\par\vspace{1.5mm}
 {\small Chidwipak Kuppani \;--\; S20230010131 \;--\; UG4\par
@@ -106,12 +100,6 @@
 \column{0.42\textwidth}
 \vspace{4mm}
 \begin{tikzpicture}[x=1cm,y=1cm]
-  % faint molecular-network backdrop
-  \coordinate (n1) at (0.0,5.35); \coordinate (n2) at (0.95,5.8); \coordinate (n3) at (1.95,5.4);
-  \coordinate (n4) at (2.9,5.85); \coordinate (n5) at (3.9,5.45); \coordinate (n6) at (1.35,4.75); \coordinate (n7) at (3.3,4.85);
-  \draw[greyline,line width=0.6pt] (n1)--(n2)--(n3)--(n4)--(n5) (n2)--(n6) (n4)--(n7);
-  \foreach \n in {n1,n2,n3,n4,n5,n6,n7} \fill[greyline] (\n) circle (1.4pt);
-  % matched pair: ligand A and ligand B differ by one substituent
   \ring{0.7}{2.9}{0.62cm}{0.38cm}
   \draw[navy,line width=1pt] ($(0.7,2.9)+(30:0.62)$) -- ++(30:0.45) coordinate (sa);
   \fill[teal] (sa) circle (0.13);
@@ -120,8 +108,7 @@
   \fill[navy] ($(sb)+(-0.12,-0.12)$) rectangle ($(sb)+(0.12,0.12)$);
   \draw[arr,<->] (1.55,2.9) -- (2.85,2.9);
   \node[lbl,above] at (2.2,3.0) {single edit};
-  \node[lbl,below] at (2.2,2.76) {Tanimoto \gt\,0.80};
-  % potency track
+  \node[lbl,below] at (2.2,2.76) {close analogues};
   \draw[slatemid,line width=0.8pt] (0.1,0.85) -- (4.3,0.85);
   \fill[teal] (0.7,0.85) circle (0.11);
   \fill[navy] (3.7,0.85) circle (0.11);
@@ -136,336 +123,434 @@
 \end{columns}
 \end{frame}
 
-% ============================================================== SLIDE 2 - problem and validation
-\begin{frame}{Problem Statement \& Validation}
+% ============================================================== 2 -- DRUG DISCOVERY TERMS
+\begin{frame}{Drug discovery: a short vocabulary}
 \begin{columns}[T,totalwidth=\textwidth]
-\column{0.465\textwidth}
-\sect{What is an activity cliff?}
-{\footnotesize Structurally \emph{similar} molecules whose measured potency differs \emph{greatly}: a small edit, a large effect.}\par\vspace{0.5mm}
-\begin{tikzpicture}[x=1cm,y=1cm]
-  \ring{0.7}{1.5}{0.46cm}{0.28cm}
-  \draw[navy,line width=1pt] ($(0.7,1.5)+(30:0.46)$) -- ++(30:0.34) coordinate (sa); \fill[teal] (sa) circle (0.1);
-  \node[lbl] at (0.7,0.78) {Ligand A};
-  \ring{4.4}{1.5}{0.46cm}{0.28cm}
-  \draw[navy,line width=1pt] ($(4.4,1.5)+(30:0.46)$) -- ++(30:0.34) coordinate (sb); \fill[navy] ($(sb)+(-0.09,-0.09)$) rectangle ($(sb)+(0.09,0.09)$);
-  \node[lbl] at (4.4,0.78) {Ligand B};
-  \draw[arr,<->] (1.4,1.5) -- (3.7,1.5);
-  \node[lbl,below] at (2.55,1.47) {similar: Tanimoto \gt\,0.80};
-  \fill[slatemid] (0.2,0.2) rectangle (1.9,0.5);  \node[lbl,anchor=west] at (2.0,0.35) {A: weaker};
-  \fill[teal]    (0.2,-0.3) rectangle (4.3,0.0);  \node[lbl,anchor=west] at (4.4,-0.15) {B: more potent};
-  \node[font=\scriptsize\bfseries,text=navy,anchor=north west] at (0.2,-0.38) {$\Delta$pIC$_{50}$ \gt\,1.0 \;(\gt\,10$\times$ potency difference)};
-  \node[font=\tiny\itshape,text=slate,anchor=south east] at (5.9,1.1) {schematic};
-\end{tikzpicture}\par\vspace{0.5mm}
-\begin{itemize}\itemsep0.6mm
-  \item \textbf{Why it matters:} chemists must choose which analogues to make; cliffs break ``similar $\Rightarrow$ similar activity''.
-  \item Global absolute-activity models and similarity alone can rank close analogues poorly.
-\end{itemize}
-\column{0.525\textwidth}
-\sect{Validation on COVID Moonshot Mpro data}
-{\scriptsize 1,102 molecules \;\textperiodcentered\; cliff = Tanimoto \gt\,0.80 \textbf{and} $|\Delta$pIC$_{50}|$ \gt\,1.0}\par\vspace{0.5mm}
-\begin{tikzpicture}[x=1cm,y=1cm]
-  \def\u{0.15}
-  \node[font=\scriptsize\bfseries,text=navy,anchor=south west] at (0,0.52) {46 cliff pairs in the full dataset};
-  \fill[slatemid] (0,0) rectangle (27*\u,0.45);
-  \fill[tealmid]  (27*\u,0) rectangle (41*\u,0.45);
-  \fill[teal]     (41*\u,0) rectangle (46*\u,0.45);
-  \draw[bgc,line width=1.2pt] (27*\u,0) -- (27*\u,0.45) (41*\u,0) -- (41*\u,0.45);
-  \node[font=\footnotesize\bfseries,text=white] at (13.5*\u,0.225) {27};
-  \node[font=\footnotesize\bfseries,text=navy] at (34*\u,0.225) {14};
-  \node[font=\footnotesize\bfseries,text=white] at (43.5*\u,0.225) {5};
-  \node[lbl,anchor=north] at (13.5*\u,-0.06) {both in training};
-  \node[lbl,anchor=north] at (33.5*\u,-0.06) {1 held-out + 1 train};
-  \draw[teal,line width=0.6pt] (43.5*\u,-0.04) -- (43.5*\u,-0.36);
-  \node[lbl,anchor=north east,text=teal] at (46*\u+0.12,-0.36) {\textbf{strict held-out (both unseen)}};
-  % chart 2 (label column + bars)
-  \node[font=\scriptsize\bfseries,text=navy,anchor=north west] at (0,-1.0) {ChemProp (absolute), held-out Mpro compounds};
-  \node[lbl,anchor=east] at (2.15,-1.65) {global Spearman $\rho$};
-  \fill[slatemid] (2.25,-1.8) rectangle (2.25+0.78*4.4,-1.5);
-  \node[font=\scriptsize\bfseries,text=navy,anchor=west] at (2.25+0.78*4.4+0.08,-1.65) {0.78};
-  \node[lbl,anchor=east] at (2.15,-2.1) {within-series $\rho$};
-  \fill[teal] (2.25,-2.25) rectangle (2.25+0.19*4.4,-1.95);
-  \node[font=\scriptsize\bfseries,text=navy,anchor=west] at (2.25+0.19*4.4+0.08,-2.1) {0.19};
-  \draw[greyline,line width=0.4pt] (2.25,-2.35) -- (2.25+4.4,-2.35);
-  \foreach \t in {0,0.5,1.0} {\draw[greyline] (2.25+\t*4.4,-2.35) -- (2.25+\t*4.4,-2.4); \node[font=\tiny,text=slate,anchor=north] at (2.25+\t*4.4,-2.4) {\t};}
-\end{tikzpicture}\par\vspace{-0.5mm}
-{\scriptsize Close held-out pairs: 44, containing 5 cliffs (12 test series).}\par
+\column{0.48\textwidth}
+\sect{Ligand}
+{\footnotesize A small molecule tested for interaction with a target protein.}\par\vspace{3mm}
+\sect{Protein pocket}
+{\footnotesize The three-dimensional region where the ligand sits and makes contacts.}\par\vspace{3mm}
+\sect{Binding affinity}
+{\footnotesize How strongly the ligand binds. Lower $K_d$ means tighter binding.}\par
+\column{0.48\textwidth}
+\sect{Relative affinity}
+{\footnotesize The change between two ligands against the same target, rather than either score alone.}\par\vspace{3mm}
+\sect{Congeneric / within-series}
+{\footnotesize Analogues that share a chemical core and differ through small local edits.}\par\vspace{3mm}
+\sect{Activity cliff}
+{\footnotesize Close analogues with a large difference in measured biological activity.}\par
 \end{columns}
 \vfill
-\src{Sources: \parencite{stumpfe2012cliffs,maggiora2006cliffs,vantilburg2023cliffs}; data \parencite{boby2023moonshot}; ChemProp \parencite{yang2019chemprop}; counts: this work.}
+\noindent\colorbox{teallight}{\parbox{\dimexpr\textwidth-2\fboxsep}{\scriptsize\textbf{Our experimental label is pIC$_{50}$:} a one-unit increase means a tenfold lower IC$_{50}$ in the assay. pIC$_{50}$ is a potency measure, not a direct binding-affinity measurement.}}
+\vspace{1mm}
+\src{Sources: project teammate brief, pp.\ 1--3; activity-cliff definitions \parencite{stumpfe2012cliffs,maggiora2006cliffs}.}
 \end{frame}
 
-% ============================================================== SLIDE 3 - solution and innovation
-\begin{frame}{Proposed Solution \& Innovation}
-\begin{columns}[T,totalwidth=\textwidth]
-\column{0.5\textwidth}
+% ============================================================== 3 -- A BENEFICIAL ACTIVITY CLIFF
+\begin{frame}{A small edit can improve the measured response}
 \begin{tikzpicture}[x=1cm,y=1cm]
-  \foreach \y/\t/\d in {
-    0/{1\;\; Constrained analogue generation}/{Training-derived substituent swaps (RDKit matched molecular pairs): small, traceable edits. Rule/example-based -- not a neural generative model.},
-    -1.55/{2\;\; Relative-affinity scoring}/{Siamese D-MPNN trained on potency \emph{differences} between related molecules; predicts candidate vs.\ seed $\Delta$pIC$_{50}$.},
-    -2.9/{3\;\; Alerts \& uncertainty-aware ranking}/{Three-model ensemble spread enters the ranking; potential-cliff flag for close analogues with a large predicted change.}} {
-    \fill[teal] (0,\y-1.0) rectangle (0.07,\y+0.05);
-    \node[anchor=north west,font=\footnotesize\bfseries,text=navy,inner sep=0pt] at (0.22,\y+0.05) {\t};
-    \node[anchor=north west,font=\scriptsize,text=slate,text width=6.3cm,align=left,inner sep=0pt] at (0.22,\y-0.37) {\d};
+  \useasboundingbox (0,0.18) rectangle (14.38,-4.78);
+  \node[font=\footnotesize\bfseries,text=navy] at (3.15,-0.14) {Ligand A: original};
+  \node[font=\footnotesize\bfseries,text=navy] at (10.75,-0.14) {Ligand B: edited};
+  % Same pocket and ligand core in both scenes; only the terminal group changes.
+  \foreach \cx in {3.15,10.75} {
+    \begin{scope}[shift={(\cx,-1.32)}]
+      \draw[navy!75,line width=2.5pt] (-2.0,0.45) .. controls (-1.7,-0.65) and (-1.15,-1.18) .. (0,-1.18)
+        .. controls (1.15,-1.18) and (1.7,-0.65) .. (2.0,0.45);
+      \draw[tealmid,line width=0.8pt] (-1.78,0.38) .. controls (-1.5,-0.48) and (-1.05,-0.94) .. (0,-0.94)
+        .. controls (1.05,-0.94) and (1.5,-0.48) .. (1.78,0.38);
+      \draw[navy,line width=1.3pt] (-0.85,-0.47)--(-0.1,-0.28)--(0.55,-0.52)--(1.0,-0.34);
+      \foreach \x/\y in {-0.85/-0.47,-0.1/-0.28,0.55/-0.52} {\fill[navy] (\x,\y) circle (0.11);}
+    \end{scope}
   }
+  \fill[slatemid] (4.15,-1.66) circle (0.10);
+  \node[font=\tiny,text=slate,anchor=west] at (4.55,-1.16) {contact absent};
+  \fill[teal] (11.75,-1.66) circle (0.16);
+  \draw[teal,densely dashed,line width=0.9pt] (11.82,-1.52)--(12.22,-1.25);
+  \node[font=\tiny,text=teal,anchor=west] at (12.18,-1.16) {new favorable contact};
+  \draw[arr,->] (5.55,-1.55)--(8.25,-1.55);
+  \node[font=\scriptsize\bfseries,text=teal,fill=bgc] at (6.90,-1.34) {one local edit};
+  \node[font=\scriptsize,text=slate] at (6.90,-2.49) {same protein pocket and shared ligand core};
+  % Pocket interaction is a hypothesis; assay potency is the observed endpoint.
+  \draw[greyline,line width=0.6pt] (1.05,-2.94)--(13.33,-2.94);
+  \node[font=\scriptsize\bfseries,text=navy,anchor=west] at (1.05,-3.25) {Pocket-based hypothesis};
+  \node[font=\scriptsize,text=slate,anchor=west] at (4.42,-3.25) {The new contact may make B bind more favorably than A.};
+  \node[font=\scriptsize\bfseries,text=navy,anchor=west] at (1.05,-3.75) {Improved assay effect};
+  \node[font=\scriptsize,text=slate,anchor=west] at (4.42,-3.75) {Illustrative outcome: B inhibits the target more strongly than A.};
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (4.42,-4.24)
+    {A $\geq 1$-unit pIC$_{50}$ gain means $\geq 10\times$ assay potency: a beneficial activity cliff.};
+  \node[font=\tiny,text=slate,anchor=west] at (4.42,-4.55)
+    {A possible therapeutic improvement to test; no clinical response has been measured.};
 \end{tikzpicture}
-\column{0.47\textwidth}
+\vfill
+\src{Conceptual interaction and positive-cliff example, not a measured pose or clinical result. Therapeutic benefit needs later testing; pIC$_{50}$ is assay potency \parencite{stumpfe2012cliffs,boby2023moonshot}.}
+\end{frame}
+
+% ============================================================== 4 -- SINGLE-CANDIDATE BASELINES
+\begin{frame}{Representative absolute activity and affinity predictors}
 \begin{tikzpicture}[x=1cm,y=1cm]
-  \node[box,text width=3.95cm,minimum height=7mm,font=\scriptsize\bfseries] (in) at (1.98,3.7) {Seed ligand +\\experimental training data};
-  \draw[teal,line width=0.8pt,rounded corners=1.5pt,fill=teallight!60] (0.0,1.55) rectangle (3.95,3.15);
-  \node[font=\tiny\bfseries,text=teal,anchor=north west] at (0.08,3.12) {CLIFFFORGE CORE (IMPLEMENTED)};
-  \node[box,text width=1.55cm,minimum height=6mm,font=\tiny\bfseries,inner sep=2pt] (g) at (0.95,2.5) {Generate};
-  \node[box,text width=1.55cm,minimum height=6mm,font=\tiny\bfseries,inner sep=2pt] (f) at (3.0,2.5) {Filter};
-  \node[box,text width=1.55cm,minimum height=6mm,font=\tiny\bfseries,inner sep=2pt] (r) at (0.95,1.85) {Rank + alerts};
-  \node[box,text width=1.55cm,minimum height=6mm,font=\tiny\bfseries,inner sep=2pt] (s) at (3.0,1.85) {Score $\Delta$pIC$_{50}$};
-  \draw[arr] (g) -- (f); \draw[arr] (f) -- (s); \draw[arr] (s) -- (r);
-  \node[box,text width=3.95cm,minimum height=7mm,font=\scriptsize\bfseries] (out) at (1.98,0.55) {Ranked shortlist + potential-cliff alerts};
-  \draw[arr] (in) -- (1.98,3.15); \draw[arr] (1.98,1.55) -- (out);
-  % next stage
-  \node[boxplan,text width=1.9cm,font=\tiny\bfseries,minimum height=13mm,inner sep=2pt] (fut) at (5.6,1.85) {Protein pocket + structure-based scoring};
-  \draw[arrplan] (fut.west) -- (s.east);
-  \node[font=\tiny,text=slate,anchor=north] at (5.6,1.15) {NEXT STAGE (planned)};
-  % legend
-  \draw[teal,line width=0.8pt] (0,-0.25) -- (0.4,-0.25); \node[font=\tiny,text=slate,anchor=west] at (0.45,-0.25) {implemented};
-  \draw[slate,dash pattern=on 2.2pt off 1.8pt,line width=0.8pt] (1.9,-0.25) -- (2.3,-0.25); \node[font=\tiny,text=slate,anchor=west] at (2.35,-0.25) {planned};
+  \useasboundingbox (0,0.12) rectangle (14.38,-4.69);
+  \node[font=\scriptsize,text=slate,anchor=west] at (0.10,-0.13)
+    {Each architecture predicts one scalar endpoint for one candidate or drug--target pair.};
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (0.12,-0.57) {MODEL};
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (2.10,-0.57) {INPUT};
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (5.35,-0.57) {ENCODER / HEAD};
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (10.42,-0.57) {OUTPUT};
+  \draw[greyline,line width=0.65pt] (0.10,-0.77)--(14.28,-0.77);
+
+  \node[font=\footnotesize\bfseries,text=navy,anchor=north west] at (0.12,-0.89) {ChemProp};
+  \node[font=\scriptsize,text=navy,anchor=north west,text width=3.0cm,align=left] at (2.10,-0.89) {Ligand graph only};
+  \node[font=\scriptsize,text=navy,anchor=north west,text width=4.75cm,align=left] at (5.35,-0.89)
+    {Directed bond message passing + regression};
+  \node[font=\scriptsize,text=navy,anchor=north west,text width=3.80cm,align=left] at (10.42,-0.89)
+    {Mpro pIC$_{50}$ in our benchmark};
+  \draw[greyline,line width=0.4pt] (0.10,-1.60)--(14.28,-1.60);
+
+  \node[font=\footnotesize\bfseries,text=navy,anchor=north west] at (0.12,-1.72) {DeepDTA};
+  \node[font=\scriptsize,text=navy,anchor=north west,text width=3.0cm,align=left] at (2.10,-1.72)
+    {SMILES + protein sequence};
+  \node[font=\scriptsize,text=navy,anchor=north west,text width=4.75cm,align=left] at (5.35,-1.72)
+    {Separate 1D CNNs; fused regression};
+  \node[font=\scriptsize,text=navy,anchor=north west,text width=3.80cm,align=left] at (10.42,-1.72)
+    {Drug--target activity / affinity score};
+  \draw[greyline,line width=0.4pt] (0.10,-2.43)--(14.28,-2.43);
+
+  \node[font=\footnotesize\bfseries,text=navy,anchor=north west] at (0.12,-2.55) {GraphDTA};
+  \node[font=\scriptsize,text=navy,anchor=north west,text width=3.0cm,align=left] at (2.10,-2.55)
+    {Ligand graph +\\protein sequence};
+  \node[font=\scriptsize,text=navy,anchor=north west,text width=4.75cm,align=left] at (5.35,-2.55)
+    {Graph neural net + protein CNN; regression};
+  \node[font=\scriptsize,text=navy,anchor=north west,text width=3.80cm,align=left] at (10.42,-2.55)
+    {Drug--target activity / affinity score};
+  \draw[greyline,line width=0.4pt] (0.10,-3.26)--(14.28,-3.26);
+
+  \node[font=\footnotesize\bfseries,text=navy,anchor=north west] at (0.12,-3.38) {Pafnucy};
+  \node[font=\scriptsize,text=navy,anchor=north west,text width=3.0cm,align=left] at (2.10,-3.38)
+    {Posed 3D complex};
+  \node[font=\scriptsize,text=navy,anchor=north west,text width=4.75cm,align=left] at (5.35,-3.38)
+    {Voxelized complex + 3D CNN; dense head};
+  \node[font=\scriptsize,text=navy,anchor=north west,text width=3.80cm,align=left] at (10.42,-3.38)
+    {Affinity estimate from 3D structure};
+  \draw[greyline,line width=0.65pt] (0.10,-4.09)--(14.28,-4.09);
+
+  \node[font=\scriptsize\bfseries,text=navy,anchor=west] at (0.12,-4.37)
+    {Close-pair comparison: predict A and B separately, then compute $\hat y_{\mathrm B}-\hat y_{\mathrm A}$.};
+  \node[font=\tiny,text=slate,anchor=west] at (0.12,-4.66)
+    {ChemProp is the tested comparator here. Our pIC$_{50}$ assay endpoint is not a direct $K_d/K_i$ binding-affinity measurement.};
 \end{tikzpicture}
+\vfill
+\src{Architecture sources: \parencite{yang2019chemprop,ozturk2018deepdta,nguyen2021graphdta,stepniewska2018pafnucy}.}
+\end{frame}
+
+% ============================================================== 5 -- RESEARCH FOCUS
+\begin{frame}{Our research focus}
+\noindent{\color{navy}\fontsize{12.5}{15}\selectfont\bfseries Predicting binding-affinity within series, with a focus on accurately predicting activity cliffs}\par\vspace{2mm}
+\begin{columns}[T,totalwidth=\textwidth]
+\column{0.48\textwidth}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \useasboundingbox (0,0) rectangle (5.60,-3.78);
+  \node[font=\scriptsize,text=slate] at (0.65,-0.27) {R$_1$};
+  \node[font=\scriptsize\bfseries,text=navy] at (2.05,-0.27) {Seed R};
+  \node[font=\scriptsize,text=slate] at (3.45,-0.27) {R$_2$};
+  \node[font=\scriptsize,text=slate] at (4.85,-0.27) {R$_3$};
+  \foreach \x in {0.65,2.05,3.45,4.85} {
+    \ring{\x}{-1.10}{0.30cm}{0.17cm}
+    \draw[navy,line width=0.85pt] ($(\x,-1.10)+(30:0.30)$)--++(30:0.27);
+    \draw[slatemid,densely dotted,line width=0.65pt] (\x,-1.54)--(\x,-2.70);
+  }
+  \fill[slatemid] (1.10,-0.71) circle (0.10);
+  \fill[navy] (2.50,-0.71) circle (0.10);
+  \fill[teal] (3.90,-0.71) circle (0.13);
+  \fill[amber] (5.30,-0.71) circle (0.16);
+  \draw[teal,line width=1pt] (0.25,-2.82)--(5.35,-2.82);
+  \fill[slatemid] (0.65,-2.82) circle (0.09);
+  \fill[navy] (2.05,-2.82) circle (0.09);
+  \fill[teal] (3.45,-2.82) circle (0.10);
+  \fill[amber] (4.85,-2.82) circle (0.13);
+  \node[font=\tiny,text=slate] at (0.65,-3.15) {worse};
+  \node[font=\tiny,text=slate] at (2.05,-3.15) {seed};
+  \node[font=\tiny,text=slate] at (3.45,-3.15) {better};
+  \node[font=\tiny\bfseries,text=amber] at (4.85,-3.15) {possible cliff};
+  \node[font=\scriptsize,text=slate,anchor=west] at (0.15,-3.57)
+    {Model task: rank candidate-minus-seed $\Delta$activity};
+\end{tikzpicture}
+\column{0.48\textwidth}
+\sect{Why this matters to chemists}
+\begin{itemize}\itemsep2.2mm
+  \item Synthesis and assays take time; ranking close analogues helps choose the next experiment.
+  \item A correct activity direction tells whether a small edit improves the current lead.
+  \item A cliff alert draws attention to an unusually large gain or loss that similarity alone may hide.
+\end{itemize}\vspace{1mm}
+{\scriptsize\color{slate}The scientific test is held-out \emph{measured} activity. Generated analogues and model scores are hypotheses until assayed.}
 \end{columns}
-\par\vspace{0.5mm}
-{\scriptsize\color{navy}\textbf{Technology stack:} Python \;\textperiodcentered\; RDKit (transformation transfer, filters) \;\textperiodcentered\; PyTorch Siamese D-MPNN \;\textperiodcentered\; experimental activity data for training \& retrospective evaluation \;\textperiodcentered\; \textcolor{slate}{next: protein-pocket / structure-based scoring}}\par\vspace{0.8mm}
-{\scriptsize\color{navy}\textbf{Intended users:} drug-discovery research groups \;\textperiodcentered\; medicinal chemists \;\textperiodcentered\; pharmaceutical and biotechnology lead-optimization teams}\par
 \vfill
-\src{Sources: matched molecular pairs \parencite{hussain2010mmp,griffen2011mmp}; Siamese networks \parencite{bromley1993siamese}; PyTorch \parencite{paszke2019pytorch}; RDKit (rdkit.org).}
+\src{Lead-optimization framing: project teammate brief, pp.\ 1--3; matched-pair rationale \parencite{griffen2011mmp}.}
 \end{frame}
 
-% ============================================================== SLIDE 4 - technical methodology
-\begin{frame}{Technical Methodology}
+% ============================================================== 6 -- PROPOSED PROTEIN-AWARE PIPELINE
+\begin{frame}{Proposed protein-aware research pipeline}
 \begin{tikzpicture}[x=1cm,y=1cm]
-  \tikzset{st/.style={box,text width=3.7cm,minimum height=9.5mm},
-           dl/.style={lbl,text width=3.9cm,anchor=north}}
-  % row 1
-  \node[st] (n1) at (2.0,0) {\textcolor{teal}{1}\; Seed ligand + experimental training data};
-  \node[st] (n2) at (7.2,0) {\textcolor{teal}{2}\; Edit-site enumeration + observed transformations};
-  \node[st] (n3) at (12.4,0) {\textcolor{teal}{3}\; Candidate generation + chemical filtering};
-  \draw[arr] (n1) -- (n2); \draw[arr] (n2) -- (n3);
-  \node[dl] at (2.0,-0.58) {Mpro seed SMILES; 961 training compounds with measured pIC$_{50}$};
-  \node[dl] at (7.2,-0.58) {single-bond cuts; matched molecular pairs mined from training data ($\geq$\,2 precedents)};
-  \node[dl,text width=3.45cm,anchor=north east] at (14.36,-0.58) {RDKit validity, de-duplication, Tanimoto $\geq$\,0.5, edit $\leq$\,16 heavy atoms, PAINS/SA filters};
-  % row 2
-  \node[st] (n4) at (2.0,-2.55) {\textcolor{teal}{4}\; Relative-affinity prediction};
-  \node[st] (n5) at (7.2,-2.55) {\textcolor{teal}{5}\; Uncertainty-aware scoring \& ranking};
-  \node[st] (n6) at (12.4,-2.55) {\textcolor{teal}{6}\; Outputs};
-  \draw[arr] (n4) -- (n5); \draw[arr] (n5) -- (n6);
-  \draw[arr] ($(n3.south west)+(0.3,0)$) -- ++(0,-1.3) -| (n4.north);
-  \node[dl] at (2.0,-3.13) {3-seed Siamese D-MPNN ensemble; antisymmetrised candidate-vs-seed $\Delta$pIC$_{50}$};
-  \node[dl] at (7.2,-3.13) {rank by $\Delta$pIC$_{50}$ $-$ ensemble SD; flag potential cliffs (similar, large predicted change)};
-  \node[dl] at (12.4,-3.13) {filtered analogues, candidate shortlist, potential-cliff alerts with caveats};
-  % future module
-  \node[boxplan,text width=7.3cm,minimum height=7.5mm,font=\footnotesize\bfseries] (fut) at (7.2,-4.7) {Next stage: protein-pocket structure + docking / structure-based scoring};
-  \draw[arrplan] (fut.north) -- (7.3,-4.02);
-  \node[lbl,anchor=west] at (7.35,-4.2) {planned -- not yet implemented};
-  \draw[teal,line width=0.8pt] (0.0,-4.45) -- (0.45,-4.45); \node[lbl,anchor=west] at (0.5,-4.45) {implemented};
-  \draw[slate,dash pattern=on 2.2pt off 1.8pt,line width=0.8pt] (0.0,-4.8) -- (0.45,-4.8); \node[lbl,anchor=west] at (0.5,-4.8) {planned};
-\end{tikzpicture}
-\vfill
-\src{Sources: matched molecular pairs \parencite{hussain2010mmp}; D-MPNN as in ChemProp \parencite{yang2019chemprop}. Held-out activities are masked at inference.}
-\end{frame}
-
-% ============================================================== SLIDE 5 - prototype / proof of concept
-\begin{frame}{Prototype / Proof of Concept}
-\begin{tikzpicture}[x=1cm,y=1cm]
-  \useasboundingbox (0,0.1) rectangle (14.38,-5.2);  % layout box = text width; all content lies inside the page margins
-  % ---------------- panel A
-  \node[font=\fontsize{7.6}{9}\selectfont\bfseries,text=teal,anchor=north west] at (0,0) {A \;\; Relative-affinity ranking};
-  \node[font=\tiny,text=slate,anchor=north west] at (0,-0.4) {mean within-series Spearman $\rho$, held-out Mpro compounds};
-  \begin{scope}[shift={(0.55,-3.1)}]
-    \draw[greyline,line width=0.4pt] (0,0) -- (3.9,0);
-    \foreach \v in {0,0.2,0.4,0.6} {\draw[greyline,line width=0.3pt] (0,\v*2.7) -- (3.9,\v*2.7); \node[font=\tiny,text=slate,anchor=east] at (-0.05,\v*2.7) {\v};}
-    \fill[slatemid] (0.45,0) rectangle (1.55,0.192*2.7);
-    \fill[teal]     (2.3,0)  rectangle (3.4,0.581*2.7);
-    \node[font=\footnotesize\bfseries,text=navy,anchor=south] at (1.0,0.192*2.7) {0.192};
-    \node[font=\footnotesize\bfseries,text=navy,anchor=south] at (2.85,0.581*2.7) {0.581};
-    \node[lbl,anchor=north] at (1.0,-0.05) {ChemProp\\absolute};
-    \node[lbl,anchor=north] at (2.85,-0.05) {CliffForge\\relative};
-  \end{scope}
-  \node[font=\tiny,text=slate,align=left,anchor=north west] at (0,-3.95) {12 evaluation series; paired Wilcoxon $p=0.005$.\\
-    \textit{Prior internship research (FEP+, 26 series):} 0.386 $\to$ 0.644.};
-  % ---------------- panel B
-  \node[font=\fontsize{7.6}{9}\selectfont\bfseries,text=teal,anchor=north west] at (4.85,0) {B \;\; Candidate-generation funnel};
-  \node[font=\tiny,text=slate,anchor=north west] at (4.85,-0.4) {one held-out Mpro seed (pIC$_{50}$ 7.18)};
-  \def\fx{6.05}\def\fw{2.6}
-  \foreach \y/\n in {-1.1/324, -1.8/231, -2.5/34, -3.2/34} {
-    \pgfmathsetmacro{\w}{\fw*\n/324}
-    \ifnum \n>100 \def\fc{tealmid} \else \def\fc{teal} \fi
-    \fill[\fc] (\fx-\w/2,\y-0.28) rectangle (\fx+\w/2,\y+0.28);
+  \useasboundingbox (0,0.12) rectangle (14.38,-4.82);
+  \node[font=\tiny\bfseries,text=slate,anchor=west] at (0,-0.05) {RESEARCH VISION \quad PLANNED COMPONENTS};
+  % Oblique pocket scenes keep protein context visible through the edit.
+  \node[font=\scriptsize\bfseries,text=navy] at (2.03,-0.35) {A \quad Bound complex};
+  \foreach \cx in {2.03,6.68} {
+    \fill[slatemid!40] (\cx,-1.62) ellipse (1.58 and 0.55);
+    \fill[teallight] (\cx,-1.13) ellipse (1.58 and 0.55);
+    \fill[bgc] (\cx,-1.13) ellipse (1.17 and 0.33);
+    \draw[tealmid,line width=0.75pt] ({\cx-1.58},-1.13)--({\cx-1.58},-1.62)
+      ({\cx+1.58},-1.13)--({\cx+1.58},-1.62);
+    \draw[teal,line width=1.15pt] (\cx,-1.13) ellipse (1.58 and 0.55);
+    \draw[tealmid,line width=0.65pt] (\cx,-1.13) ellipse (1.17 and 0.33);
+    \draw[navy,line width=1.1pt] ({\cx-0.62},-1.14)--({\cx-0.16},-1.00)--({\cx+0.29},-1.18)--({\cx+0.64},-1.04);
+    \foreach \dx/\dy in {-0.62/-1.14,-0.16/-1.00,0.29/-1.18}
+      {\fill[navy] ({\cx+\dx},\dy) circle (0.075);}
   }
-  \node[font=\footnotesize\bfseries,text=navy] at (\fx,-1.1) {324};
-  \node[font=\footnotesize\bfseries,text=navy] at (\fx,-1.8) {231};
-  \node[font=\footnotesize\bfseries,text=navy,anchor=west] at (\fx+0.4,-2.5) {34};
-  \node[font=\footnotesize\bfseries,text=navy,anchor=west] at (\fx+0.4,-3.2) {34};
-  \node[lbl,anchor=west,align=left] at (\fx+1.45,-1.1) {attempted edits};
-  \node[lbl,anchor=west,align=left] at (\fx+1.45,-1.8) {unique candidates};
-  \node[lbl,anchor=west,align=left] at (\fx+0.95,-2.5) {pass filters};
-  \node[lbl,anchor=west,align=left] at (\fx+0.95,-3.2) {scored};
-  \node[font=\tiny,text=slate,align=left,anchor=north west] at (4.85,-3.95) {$\approx$ 27 s on CPU end-to-end (reference run).\\Model-predicted scores; none synthesised or docked.};
-  % ---------------- panel C
-  \node[font=\fontsize{7.6}{9}\selectfont\bfseries,text=teal,anchor=north west] at (9.85,0) {C \;\; Preliminary cliff detection};
-  \node[font=\tiny,text=slate,anchor=north west] at (9.85,-0.4) {strict held-out pairs: 44 close pairs, 5 true cliffs};
-  \foreach \y/\lab/\k/\who in {-1.35/{CliffForge relative}/2/teal, -2.35/{ChemProp baseline}/0/slatemid} {
-    \node[font=\scriptsize\bfseries,text=navy,anchor=west] at (9.85,\y+0.5) {\lab};
-    \foreach \i in {0,...,4} {
-      \ifnum \i<\k \fill[\who] (9.85+\i*0.6,\y-0.28) rectangle (9.85+\i*0.6+0.48,\y+0.2);
-      \else \draw[slatemid,line width=0.8pt] (9.85+\i*0.6,\y-0.28) rectangle (9.85+\i*0.6+0.48,\y+0.2); \fi
-    }
-  }
-  \node[font=\footnotesize\bfseries,text=teal,anchor=west] at (12.95,-1.35) {2 of 5};
-  \node[font=\footnotesize\bfseries,text=slate,anchor=west] at (12.95,-2.35) {0 of 5};
-  \node[font=\tiny,text=slate,anchor=north west,align=left,text width=4.4cm] at (9.85,-2.85) {Boxes = the 5 true cliffs; filled = flagged. No false-positive flags among the 44 pairs. Average precision \textbf{0.73} vs.\ \textbf{0.35}.};
-  \node[font=\tiny\bfseries,text=amber,anchor=north west,align=left,text width=4.4cm] at (9.85,-3.62) {Preliminary: only 5 positive pairs.};
-  \draw[greyline,line width=0.4pt] (4.65,-0.1) -- (4.65,-4.35) (9.65,-0.1) -- (9.65,-4.35);
-  % retrospective strip
-  \fill[slatelight] (0,-4.55) rectangle (14.4,-5.15);
-  \node[font=\scriptsize,text=navy,anchor=west,text width=13.9cm] at (0.15,-4.85) {\textbf{Supporting retrospective check:} training-derived edits recovered \textbf{82 of 316} reachable held-out analogue pairs; the relative model gave the correct activity direction on 53/82 (65\%) vs.\ 47/82 (57\%) for ChemProp (difference not significant).};
+  \fill[teal] (2.67,-1.04) circle (0.12);
+  \node[font=\tiny,text=slate,fill=bgc] at (2.03,-2.20)
+    {protein structure + ligand pose + chemistry};
+  \draw[arrplan] (3.66,-1.24)--(5.02,-1.24);
+  \node[font=\scriptsize\bfseries,text=teal,align=center] at (4.34,-0.35) {B \quad Local edit};
+  \node[font=\tiny,text=slate,align=center] at (4.34,-1.78) {mask / replace\\one R-group};
+  \fill[amber] (7.32,-1.04) circle (0.17);
+  \node[font=\scriptsize\bfseries,text=teal] at (6.68,-0.35) {C \quad DiffSBDD inpainting};
+  \node[font=\tiny,text=slate] at (6.68,-2.20) {ligand B; FEgrow / RDKit fallback};
+  \draw[slate,dash pattern=on 2.2pt off 1.8pt,line width=0.65pt]
+    (2.03,-1.92)--(2.03,-2.42)--(6.68,-2.42)--(6.68,-1.92);
+  \node[font=\tiny,text=slate,fill=bgc] at (4.35,-2.42) {pair A + B in the same pocket};
+  \draw[arrplan] (8.34,-1.24)--(9.00,-1.24);
+  \node[boxplan,text width=4.32cm,minimum height=16.5mm,font=\scriptsize] (score) at (11.66,-1.29)
+    {\textbf{D \quad Filtering and labels}\\Chemical validity + pose checks\\\textbf{SMINA / GNINA / Vina scoring}\\A vs.\ B $\Delta$score = noisy training proxy};
+
+  % Parent and analogue are paired in a shared-weight ligand--pocket encoder.
+  \node[font=\scriptsize\bfseries,text=navy,anchor=west] at (0,-2.68)
+    {E \quad Siamese shared pair encoder};
+  \node[font=\tiny,text=slate,anchor=west] at (4.58,-2.68)
+    {molecular graphs + 3D interaction features};
+  \node[boxplan,text width=1.58cm,minimum height=7mm,font=\scriptsize] (ain) at (0.98,-3.20) {A + pocket};
+  \node[boxplan,text width=1.58cm,minimum height=7mm,font=\scriptsize] (bin) at (0.98,-3.94) {B + pocket};
+  \node[boxplan,text width=2.05cm,minimum height=7mm,font=\scriptsize] (ea) at (3.75,-3.20) {Shared encoder};
+  \node[boxplan,text width=2.05cm,minimum height=7mm,font=\scriptsize] (eb) at (3.75,-3.94) {Shared encoder};
+  \draw[arrplan] (ain)--(ea); \draw[arrplan] (bin)--(eb);
+  \draw[slate,densely dotted,line width=0.65pt] (ea.south)--(eb.north);
+  \node[boxplan,text width=3.35cm,minimum height=12mm,font=\scriptsize] (diff) at (8.40,-3.57)
+    {\textbf{F \quad Difference head}\\Predict $\Delta$affinity + relative rank\\Regression / ranking loss; uncertainty};
+  \draw[arrplan] (ea.east)--(diff.north west);
+  \draw[arrplan] (eb.east)--(diff.south west);
+  \node[boxplan,text width=2.38cm,minimum height=12mm,font=\scriptsize] (eval) at (12.58,-3.57)
+    {\textbf{G \quad Evaluation}\\Held-out measured pairs + cliffs\\vs.\ absolute / pair baselines};
+  \draw[arrplan] (diff)--(eval);
+  \draw[arrplan] (score.south)--(11.66,-2.86)--(8.40,-2.86)--(diff.north);
+  \node[font=\tiny,text=slate,fill=bgc] at (10.35,-2.86) {proxy training label};
+  \node[font=\tiny\bfseries,text=amber,anchor=west] at (0,-4.51)
+    {Generated pairs are hypotheses; measured held-out pairs test whether the model identifies real cliffs.};
 \end{tikzpicture}
 \vfill
-\src{Sources: ChemProp \parencite{yang2019chemprop}; Moonshot data \parencite{boby2023moonshot}; FEP+ benchmark, prior work \parencite{ross2023fepbenchmark}. All results are new except the FEP+ line. The lead-optimization setting (14 cliffs) gave mixed results and informs the next stage.}
+\src{Planned A--G sequence: CliffForge teammate brief, pp.\ 2--3. SMINA / GNINA / Vina supply proxy scores, not measured affinity. Slide 7 shows the current implementation.}
 \end{frame}
 
-% ============================================================== SLIDE 6 - larger dataset results
-\begin{frame}{Validation at Scale: Dablander MMP Dataset (1{,}924 molecules)}
+% ============================================================== 7 -- CURRENT IMPLEMENTATION
+\begin{frame}{Current prototype: a 2D relative-activity model}
 \begin{tikzpicture}[x=1cm,y=1cm]
-  \useasboundingbox (0,0.18) rectangle (14.38,-5.38);
+  \useasboundingbox (0,0.12) rectangle (14.38,-4.75);
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (0.12,-0.10)
+    {ONE IMPLEMENTED WORKFLOW \quad\textbullet\quad FIVE MATCHING STEPS};
+  \node[box,text width=3.82cm,minimum height=15mm,font=\scriptsize,align=left] (s1) at (2.13,-1.12)
+    {{\color{teal}\bfseries 1 \quad Input}\\Seed SMILES + 961 Mpro training compounds with measured pIC$_{50}$.};
+  \node[box,text width=3.82cm,minimum height=15mm,font=\scriptsize,align=left] (s2) at (7.20,-1.12)
+    {{\color{teal}\bfseries 2 \quad Generate}\\RDKit applies training-observed single-substituent swaps (at least two precedents).};
+  \node[box,text width=3.82cm,minimum height=15mm,font=\scriptsize,align=left] (s3) at (12.23,-1.12)
+    {{\color{teal}\bfseries 3 \quad Filter}\\Reject invalid or duplicate structures; check similarity, edit size, PAINS and synthetic accessibility.};
+  \draw[arr] (s1.east)--(s2.west);
+  \draw[arr] (s2.east)--(s3.west);
 
-  % Two short dataset lines keep the charts below the header.
-  \fill[slatelight] (0,0.16) rectangle (14.38,-0.46);
-  \node[font=\scriptsize,text=navy,anchor=west] at (0.15,-0.02)
-    {\textbf{Dataset:} 1{,}924 Mpro molecules \;\textperiodcentered\; 1{,}582 train / 181 test \;\textperiodcentered\; 9{,}323 training MMP pairs};
-  \node[font=\scriptsize,text=navy,anchor=west] at (0.15,-0.29)
-    {\textbf{Cliff:} Tanimoto $\geq$\,0.80 \textbf{and} $|\Delta\text{pIC}_{50}|\geq$\,1.0};
-
-  \draw[greyline,line width=0.4pt] (4.77,-0.58) -- (4.77,-4.42)
-                                   (9.58,-0.58) -- (9.58,-4.42);
-
-  % A: average precision in the lead-optimisation setting.
-  \node[font=\fontsize{7.6}{9}\selectfont\bfseries,text=teal,anchor=north west] at (0,-0.61)
-    {A \;\; Lead-optimisation cliffs};
-  \node[font=\tiny,text=slate,anchor=north west,align=left] at (0,-0.99)
-    {Average precision; Setting B (test vs.\ training)\\25 true cliffs among 223 close pairs};
-  \begin{scope}[shift={(0.48,-3.70)}]
-    \draw[greyline,line width=0.4pt] (0,0) -- (3.75,0);
-    \foreach \v in {0,0.2,0.4,0.6,0.8} {
-      \draw[greyline,line width=0.3pt] (0,\v*2.55) -- (3.75,\v*2.55);
-      \node[font=\tiny,text=slate,anchor=east] at (-0.05,\v*2.55) {\v};
-    }
-    \fill[teal] (0.22,0) rectangle (1.02,0.683*2.55);
-    \fill[slatemid] (1.42,0) rectangle (2.22,0.183*2.55);
-    \fill[slatemid!55] (2.62,0) rectangle (3.42,0.127*2.55);
-    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (0.62,0.683*2.55) {0.683};
-    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (1.82,0.183*2.55) {0.183};
-    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (3.02,0.127*2.55) {0.127};
-    \node[lbl,anchor=north] at (0.62,-0.06) {CliffForge};
-    \node[lbl,anchor=north] at (1.82,-0.06) {ChemProp};
-    \node[lbl,anchor=north] at (3.02,-0.06) {5-NN};
-  \end{scope}
-  \node[font=\tiny\bfseries,text=teal,anchor=north west] at (0.15,-4.16)
-    {Cliffs detected: 13/25 vs.\ 0/25 for both baselines};
-
-  % B: direction accuracy. All plot elements stay inside the middle panel.
-  \node[font=\fontsize{7.6}{9}\selectfont\bfseries,text=teal,anchor=north west] at (4.95,-0.61)
-    {B \;\; Cliff-direction accuracy};
-  \node[font=\tiny,text=slate,anchor=north west,align=left] at (4.95,-0.99)
-    {63 test-test pairs with $|\Delta\text{pIC}_{50}|\geq$\,1.0\\Dashed line = 50\% chance};
-  \begin{scope}[shift={(5.32,-3.70)}]
-    \draw[greyline,line width=0.4pt] (0,0) -- (3.75,0);
-    \foreach \v in {0,0.25,0.5,0.75,1.0} {
-      \draw[greyline,line width=0.3pt] (0,\v*2.05) -- (3.75,\v*2.05);
-      \node[font=\tiny,text=slate,anchor=east] at (-0.05,\v*2.05) {\v};
-    }
-    \fill[teal] (0.22,0) rectangle (1.02,0.968*2.05);
-    \fill[slatemid] (1.42,0) rectangle (2.22,0.810*2.05);
-    \fill[slatemid!55] (2.62,0) rectangle (3.42,0.683*2.05);
-    \draw[amber,dashed,line width=0.8pt] (0,0.5*2.05) -- (3.75,0.5*2.05);
-    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (0.62,0.968*2.05) {96.8\%};
-    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (1.82,0.810*2.05) {81.0\%};
-    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (3.02,0.683*2.05) {68.3\%};
-    \node[lbl,anchor=north] at (0.62,-0.06) {CliffForge};
-    \node[lbl,anchor=north] at (1.82,-0.06) {ChemProp};
-    \node[lbl,anchor=north] at (3.02,-0.06) {5-NN};
-  \end{scope}
-  \node[font=\tiny\bfseries,text=teal,anchor=north west] at (5.05,-4.16)
-    {CliffForge: +16 pp vs.\ ChemProp};
-
-  % C: within-series ranking.
-  \node[font=\fontsize{7.6}{9}\selectfont\bfseries,text=teal,anchor=north west] at (9.77,-0.61)
-    {C \;\; Within-series ranking};
-  \node[font=\tiny,text=slate,anchor=north west,align=left] at (9.77,-0.99)
-    {Mean Spearman $\rho$\\12 held-out series};
-  \begin{scope}[shift={(10.15,-3.70)}]
-    \draw[greyline,line width=0.4pt] (0,0) -- (3.75,0);
-    \foreach \v in {0,0.1,0.2,0.3,0.4} {
-      \draw[greyline,line width=0.3pt] (0,\v*5.10) -- (3.75,\v*5.10);
-      \node[font=\tiny,text=slate,anchor=east] at (-0.05,\v*5.10) {\v};
-    }
-    \fill[teal] (0.22,0) rectangle (1.02,0.311*5.10);
-    \fill[slatemid] (1.42,0) rectangle (2.22,0.304*5.10);
-    \fill[slatemid!55] (2.62,0) rectangle (3.42,0.222*5.10);
-    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (0.62,0.311*5.10) {0.311};
-    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (1.82,0.304*5.10) {0.304};
-    \node[font=\scriptsize\bfseries,text=navy,anchor=south] at (3.02,0.222*5.10) {0.222};
-    \node[lbl,anchor=north] at (0.62,-0.06) {CliffForge};
-    \node[lbl,anchor=north] at (1.82,-0.06) {ChemProp};
-    \node[lbl,anchor=north] at (3.02,-0.06) {5-NN};
-  \end{scope}
-  \node[font=\tiny\bfseries,text=teal,anchor=north west] at (9.90,-4.16)
-    {CliffForge: 0.311 vs.\ ChemProp: 0.304};
-
-  % Takeaway has enough height for its full text.
-  \fill[teallight] (0,-4.50) rectangle (14.38,-5.36);
-  \node[font=\scriptsize,text=navy,anchor=north west,text width=13.95cm,align=left] at (0.15,-4.57)
-    {\textbf{Key finding:} In Setting B, CliffForge detects 13/25 cliffs (F1\,=\,0.634, precision\,=\,81\%); ChemProp and 5-NN detect none (F1\,=\,0).\\
-     Direction accuracy: 96.8\% vs.\ ChemProp 81.0\% (\textbf{+16 pp}). Setting A (2 strict cliffs): AP 1.00 vs.\ 0.08 (CliffForge vs.\ ChemProp).};
+  \node[box,text width=5.63cm,minimum height=16mm,font=\scriptsize,align=left] (s5) at (3.46,-3.45)
+    {{\color{teal}\bfseries 5 \quad Rank}\\Sort by predicted $\Delta$ minus ensemble SD; flag close analogues with a large predicted change.};
+  \node[box,text width=5.63cm,minimum height=16mm,font=\scriptsize,align=left] (s4) at (10.92,-3.45)
+    {{\color{teal}\bfseries 4 \quad Score}\\Seed + candidate 2D graphs enter a shared-weight Siamese D-MPNN. Three-model ensemble: $\Delta$pIC$_{50}$ (candidate $-$ seed) $\pm$ SD.};
+  \draw[arr] (s3.south)--(12.23,-2.62);
+  \draw[arr] (s4.west)--(s5.east);
+  \node[font=\tiny,text=slate,anchor=west] at (0.12,-4.57)
+    {Current scope: 2D molecular graphs and rule-based edits; no protein pocket, stereochemistry, DiffSBDD or docking.};
 \end{tikzpicture}
 \vfill
-\src{Data: \parencite{boby2023moonshot,dablander2023qsar}; 1{,}924 molecules, 12{,}594 MMPs; results in \texttt{results/summary\_mmp.json}. ChemProp 2.x (D-MPNN depth=3, 60 epochs). All evaluations are strictly held-out.}
+\src{Implementation: \texttt{src/cliffforge/generate.py}, \texttt{relmodel.py}, \texttt{demo.py}; D-MPNN baseline \parencite{yang2019chemprop}.}
 \end{frame}
 
-% ============================================================== SLIDE 7 - impact and next steps
-\begin{frame}{Impact, Sustainability \& Next Steps}
+% ============================================================== 8 -- THE TWO DATASETS
+\begin{frame}{Two Mpro datasets, two cliff definitions}
 \begin{columns}[T,totalwidth=\textwidth]
-\column{0.47\textwidth}
+\column{0.48\textwidth}
+\sect{COVID Moonshot noncovalent Mpro}
+{\color{navy}\fontsize{19}{22}\selectfont\bfseries 1,102}\quad{\footnotesize molecules}\par\vspace{1.8mm}
+{\footnotesize One fixed molecule split: \textbf{961 train / 141 test}. IC$_{50}$ assay values become pIC$_{50}$; the prototype uses standardized 2D structures.}\par\vspace{2mm}
+\sect{Cliff rule}
+{\footnotesize Morgan-fingerprint Tanimoto $\geq 0.80$ \textbf{and} measured $|\Delta\mathrm{pIC}_{50}|\geq 1$ (at least $10\times$ potency).}\par\vspace{1.5mm}
+{\footnotesize \textbf{46} cliff pairs overall. Among \textbf{44} close test--test pairs, only \textbf{5} are strict held-out cliffs.}\par
+\column{0.48\textwidth}
+\sect{Dablander cleaned Mpro MMPs}
+{\color{navy}\fontsize{19}{22}\selectfont\bfseries 1,924}\quad{\footnotesize molecules}\par\vspace{1.8mm}
+{\footnotesize \textbf{12,594} supplied matched molecular pairs (MMPs). Five molecule-level folds evaluate held-out compounds; supplied pair identities are retained.}\par\vspace{2mm}
+\sect{Cliff rule}
+{\footnotesize Measured $|\Delta\mathrm{pIC}_{50}|\geq 2$ (at least $100\times$ potency). Noncliffs have $|\Delta|\leq 1$; intermediate pairs leave binary detection.}\par\vspace{1.5mm}
+{\footnotesize \textbf{2,132} binary test--test MMPs contain \textbf{106} cliffs; \textbf{343} intermediate test--test pairs are excluded.}\par
+\end{columns}
+\vfill
+\noindent\colorbox{teallight}{\parbox{\dimexpr\textwidth-2\fboxsep}{\scriptsize Both evaluations study Mpro activity. Their pair rules, cliff thresholds and splits differ, so the cliff rates are not pooled.}}
+\vspace{1mm}
+\src{Sources: Moonshot \parencite{boby2023moonshot}; Dablander MMPs \parencite{dablander2023qsar}; project protocol and result files.}
+\end{frame}
+
+% ============================================================== 9 -- INPUT-TO-OUTPUT EXAMPLE
+\begin{frame}{One prototype run: from seed to ranked shortlist}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \useasboundingbox (0,0.13) rectangle (14.38,-4.76);
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (0,-0.12) {INPUTS};
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (3.08,-0.12) {OBSERVED EDIT};
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (7.10,-0.12) {GENERATE + FILTER};
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (10.93,-0.12) {PAIRWISE SCORE};
+  % Stylized seed and edited motif, not the full Mpro chemical structure.
+  \ring{0.85}{-1.24}{0.43cm}{0.25cm}
+  \draw[navy,line width=1pt] ($(0.85,-1.24)+(30:0.43)$)--++(30:0.36);
+  \node[font=\scriptsize\bfseries,text=navy] at (2.04,-0.89) {Cl};
+  \node[font=\tiny,text=slate,text width=2.72cm,align=left,anchor=north west] at (0,-1.94)
+    {Held-out seed: pIC$_{50}$ 7.18\\961 measured training ligands};
+  \draw[arr] (2.32,-1.21)--(3.08,-1.21);
+  \ring{4.02}{-1.24}{0.43cm}{0.25cm}
+  \draw[navy,line width=1pt] ($(4.02,-1.24)+(30:0.43)$)--++(30:0.36);
+  \node[font=\tiny\bfseries,text=teal,anchor=west] at (4.79,-0.88) {NHSO$_2$Me};
+  \node[font=\tiny,text=slate,text width=3.55cm,align=left,anchor=north west] at (3.08,-1.94)
+    {Substituent swap mined from training MMPs; top candidate has 2 precedents.};
+  \draw[arr] (6.50,-1.21)--(7.03,-1.21);
+  \fill[tealmid] (7.20,-0.82) rectangle (9.55,-1.17);
+  \fill[tealmid] (7.20,-1.32) rectangle (8.87,-1.67);
+  \fill[teal] (7.20,-1.82) rectangle (7.88,-2.17);
+  \node[font=\tiny\bfseries,text=navy,anchor=west] at (9.68,-0.99) {324 edits};
+  \node[font=\tiny\bfseries,text=navy,anchor=west] at (9.00,-1.49) {231 unique};
+  \node[font=\tiny\bfseries,text=navy,anchor=west] at (8.01,-1.99) {34 retained};
+  \node[font=\tiny,text=slate,anchor=west] at (7.20,-2.42) {34 candidates scored};
+  \draw[arr] (10.68,-1.21)--(10.98,-1.21);
+  \node[box,text width=2.85cm,minimum height=13mm,font=\scriptsize] at (12.72,-1.30)
+    {Seed + candidate\\3-model 2D D-MPNN\\$\Delta$pIC$_{50}$ $\pm$ SD};
+  % Actual output table from the run.
+  \draw[greyline,line width=0.5pt] (0,-2.76)--(14.38,-2.76);
+  \node[font=\scriptsize\bfseries,text=navy,anchor=west] at (0,-3.05) {Ranked output};
+  \node[font=\tiny\bfseries,text=slate,anchor=west] at (2.55,-3.05) {EDIT};
+  \node[font=\tiny\bfseries,text=slate,anchor=west] at (8.30,-3.05) {PREDICTED $\Delta$pIC$_{50}$};
+  \node[font=\tiny\bfseries,text=slate,anchor=west] at (11.20,-3.05) {SIMILARITY};
+  \node[font=\tiny\bfseries,text=slate,anchor=west] at (12.76,-3.05) {CLIFF ALERT};
+  \draw[greyline,line width=0.5pt] (0,-3.23)--(14.38,-3.23);
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (0,-3.48) {\#1};
+  \node[font=\scriptsize,text=navy,anchor=west] at (2.55,-3.48) {Cl $\to$ NHSO$_2$Me};
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (8.30,-3.48) {+0.18 $\pm$ 0.01};
+  \node[font=\scriptsize,text=navy,anchor=west] at (11.20,-3.48) {0.90};
+  \node[font=\scriptsize,text=slate,anchor=west] at (12.76,-3.48) {No};
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (0,-3.88) {\#2};
+  \node[font=\scriptsize,text=navy,anchor=west] at (2.55,-3.88) {side-chain cyclopropyl edit};
+  \node[font=\scriptsize,text=navy,anchor=west] at (8.30,-3.88) {+0.15 $\pm$ 0.02};
+  \node[font=\scriptsize,text=navy,anchor=west] at (11.20,-3.88) {0.72};
+  \node[font=\scriptsize,text=slate,anchor=west] at (12.76,-3.88) {No};
+  \node[font=\scriptsize\bfseries,text=teal,anchor=west] at (0,-4.28) {\#3};
+  \node[font=\scriptsize,text=navy,anchor=west] at (2.55,-4.28) {sulfonamide $\to$ methoxy};
+  \node[font=\scriptsize,text=navy,anchor=west] at (8.30,-4.28) {+0.08 $\pm$ 0.05};
+  \node[font=\scriptsize,text=navy,anchor=west] at (11.20,-4.28) {0.75};
+  \node[font=\scriptsize,text=slate,anchor=west] at (12.76,-4.28) {No};
+  \node[font=\tiny\itshape,text=slate,anchor=west] at (0,-4.62)
+    {Ranked by predicted $\Delta$ minus SD. Chemical motif is schematic; output values are from the real run. None was assayed or docked.};
+\end{tikzpicture}
+\vfill
+\src{Source: \texttt{results/moonshot\_mpro\_tanimoto/metrics/shortlist.md} and \texttt{funnel.json}.}
+\end{frame}
+
+% ============================================================== 10 -- RESULTS
+\begin{frame}{Retrospective comparison: CliffForge and ChemProp}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \useasboundingbox (0,0.13) rectangle (14.38,-4.77);
+  \node[font=\scriptsize\bfseries,text=slate,anchor=west] at (0.10,-0.23) {DATASET};
+  \node[font=\scriptsize\bfseries,text=slate,anchor=west] at (2.55,-0.23) {ACTIVITY-CLIFF RANKING};
+  \node[font=\scriptsize\bfseries,text=slate,anchor=west] at (6.52,-0.23) {WITHIN-SERIES RANKING};
+  \node[font=\scriptsize\bfseries,text=slate,anchor=west] at (10.02,-0.23) {LEAD OPTIMIZATION};
+  \draw[greyline,line width=0.6pt] (0,-0.52)--(14.38,-0.52);
+  \node[font=\footnotesize\bfseries,text=navy,anchor=north west,text width=2.30cm] at (0.10,-0.75)
+    {Moonshot Mpro};
+  \node[font=\tiny,text=slate,anchor=north west,text width=2.30cm] at (0.10,-1.16)
+    {one split\\1,102 molecules};
+  \node[font=\footnotesize,text=navy,anchor=north west,text width=3.66cm,align=left] at (2.55,-0.76)
+    {AP: \textcolor{teal}{\bfseries 0.73} vs.\ 0.35\\[1mm]Cliffs found: \textcolor{teal}{\bfseries 2/5} vs.\ 0/5};
+  \node[font=\tiny,text=slate,anchor=north west,text width=3.66cm] at (2.55,-1.76)
+    {44 close test--test pairs; fixed $|\hat\Delta|>1.0$};
+  \node[font=\footnotesize,text=navy,anchor=north west,text width=3.23cm,align=left] at (6.52,-0.76)
+    {Mean Spearman $\rho$:\\\textcolor{teal}{\bfseries 0.581} vs.\ 0.192};
+  \node[font=\tiny,text=slate,anchor=north west,text width=3.23cm] at (6.52,-1.76)
+    {12 held-out chemical series};
+  \node[font=\footnotesize,text=navy,anchor=north west,text width=4.12cm,align=left] at (10.02,-0.76)
+    {Correct direction:\\\textcolor{teal}{\bfseries 53/82} vs.\ 47/82};
+  \node[font=\tiny,text=slate,anchor=north west,text width=4.12cm] at (10.02,-1.76)
+    {Retrospective proxy: 82/316 reachable pairs recovered. Direction gap inconclusive; no measured gain for generated candidates.};
+  \draw[greyline,line width=0.6pt] (0,-2.31)--(14.38,-2.31);
+  \node[font=\footnotesize\bfseries,text=navy,anchor=north west,text width=2.30cm] at (0.10,-2.55)
+    {Dablander MMP};
+  \node[font=\tiny,text=slate,anchor=north west,text width=2.30cm] at (0.10,-2.96)
+    {five folds\\1,924 molecules};
+  \node[font=\footnotesize,text=navy,anchor=north west,text width=3.66cm,align=left] at (2.55,-2.56)
+    {AP: \textcolor{teal}{\bfseries 0.391} vs.\ 0.137\\[1mm]Cliffs found: \textcolor{teal}{\bfseries 20/106} vs.\ 0/106};
+  \node[font=\tiny,text=slate,anchor=north west,text width=3.66cm] at (2.55,-3.58)
+    {2,132 binary test--test MMPs; $|\hat\Delta|>1.5$. False positives: 16 vs.\ 0.};
+  \node[font=\footnotesize,text=navy,anchor=north west,text width=3.23cm,align=left] at (6.52,-2.56)
+    {Mean Spearman $\rho$:\\\textcolor{teal}{\bfseries 0.509} vs.\ 0.343};
+  \node[font=\tiny,text=slate,anchor=north west,text width=3.23cm] at (6.52,-3.58)
+    {2,014 reference neighborhoods};
+  \node[font=\footnotesize,text=navy,anchor=north west,text width=4.12cm,align=left] at (10.02,-2.56)
+    {Top 10\% mean measured gain:\\\textcolor{teal}{\bfseries +1.116} vs.\ +1.002 pIC$_{50}$};
+  \node[font=\tiny,text=slate,anchor=north west,text width=4.12cm] at (10.02,-3.58)
+    {2,026 proposals per model; gain versus ChemProp is inconclusive under adjusted inference.};
+  \draw[greyline,line width=0.6pt] (0,-4.30)--(14.38,-4.30);
+  \node[font=\tiny,text=slate,anchor=north west,text width=14.05cm,align=left] at (0.10,-4.42)
+    {Teal = CliffForge; dark text = ChemProp. AP is average precision. Different cliff definitions apply on the two datasets. Adjusted inference supports Dablander local ranking, while cliff AP and lead-gain differences versus ChemProp remain inconclusive.};
+\end{tikzpicture}
+\vfill
+\src{Sources: frozen Moonshot reference metrics; \texttt{results/dablander\_mmp\_5fold/performance\_summary.json}.}
+\end{frame}
+
+% ============================================================== 11 -- IMPACT, BUSINESS, ROADMAP
+\begin{frame}{Impact, business model and next steps}
+\begin{columns}[T,totalwidth=\textwidth]
+\column{0.50\textwidth}
 \sect{Potential impact (if further validated)}
-{\footnotesize More efficient analogue prioritization, with explicit uncertainty, to guide follow-up experiments.}\par\vspace{0.5mm}
+{\footnotesize More efficient analogue prioritization, with explicit uncertainty, to guide follow-up experiments.}\par
 \sect{Prospective users (not confirmed partners)}
-\begin{itemize}\itemsep0.2mm
+\begin{itemize}\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}\itemsep0pt
   \item Academic drug-discovery groups and medicinal chemistry teams
   \item Biotechnology start-ups and pharmaceutical R\&D
   \item Research collaborations, possibly CRO partners
-\end{itemize}\vspace{0.5mm}
+\end{itemize}
 \sect{Possible sustainability models (proposals)}
-\begin{itemize}\itemsep0.2mm
+\begin{itemize}\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}\itemsep0pt
   \item Open research toolkit
   \item Research collaborations
   \item Optional hosted workflows / institutional integration
 \end{itemize}
-\column{0.5\textwidth}
+\sect{Business model (proposal)}
+{\scriptsize Proposed: enterprise licenses for lead optimization or funded pharma co-development. Demand is untested.}\par
+\column{0.47\textwidth}
 \sect{Next-stage roadmap}
 \begin{tikzpicture}[x=1cm,y=1cm]
-  \draw[greyline,line width=1pt] (0.22,0.1) -- (0.22,-3.85);
-  \foreach \y/\n/\t/\d in {
-    -0.05/{\checkmark}/{Today: working prototype}/{generation, relative scoring, ranking, evaluation tooling},
-    -0.82/1/{Expanded cliff validation}/{larger, series-rich datasets; more held-out positive pairs},
-    -1.59/2/{Structure-based scoring}/{suitable protein structure + docking workflow},
-    -2.36/3/{Stereochemistry- and 3D-aware evaluation}/{beyond the current 2D, stereo-free models},
-    -3.13/4/{Richer transformation library}/{expand and measure candidate coverage},
-    -3.9/5/{Experimental test}/{selected candidate set, when feasible}} {
+  \draw[greyline,line width=1pt] (0.22,0.05)--(0.22,-3.98);
+  \foreach \y/\n in {-0.10/1,-0.78/2,-1.46/3,-2.14/4,-2.82/5,-3.50/6} {
     \node[draw=teal,fill=white,circle,minimum size=4.4mm,inner sep=0pt,font=\scriptsize\bfseries,text=teal,line width=0.8pt] at (0.22,\y) {\n};
-    \node[anchor=west,font=\footnotesize\bfseries,text=navy] at (0.62,\y+0.11) {\t};
-    \node[anchor=west,font=\scriptsize,text=slate] at (0.62,\y-0.18) {\d};
   }
-  \fill[teal] (0.22,-0.05) circle (0.22); \node[font=\scriptsize\bfseries,text=white] at (0.22,-0.05) {\checkmark};
+  \fill[teal] (0.22,-0.10) circle (0.22);
+  \node[font=\scriptsize\bfseries,text=white] at (0.22,-0.10) {\checkmark};
+  \node[anchor=west,font=\scriptsize\bfseries,text=navy] at (0.62,-0.10) {Today: working prototype};
+  \node[anchor=west,font=\scriptsize\bfseries,text=navy] at (0.62,-0.78) {DiffSBDD analogue generation};
+  \node[anchor=west,font=\scriptsize\bfseries,text=navy] at (0.62,-1.46) {Structure-based scoring};
+  \node[anchor=west,font=\scriptsize\bfseries,text=navy] at (0.62,-2.14) {Stereochemistry and 3D-aware evaluation};
+  \node[anchor=west,font=\scriptsize\bfseries,text=navy] at (0.62,-2.82) {Expanded cliff validation};
+  \node[anchor=west,font=\scriptsize\bfseries,text=navy] at (0.62,-3.50) {Experimental testing};
+  \node[anchor=west,font=\tiny,text=slate] at (0.62,-3.81) {validate computational results in the lab};
 \end{tikzpicture}
 \end{columns}
-\vfill
-\noindent\colorbox{teallight}{\parbox{\dimexpr\textwidth-2\fboxsep}{\scriptsize\centering\textbf{Value:} relative-affinity learning and activity-cliff-informed analogue prioritization aim to focus effort on the most informative candidates.}}
-\vspace{1mm}
 \end{frame}
 
 \end{document}

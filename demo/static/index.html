@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>CliffForge · Molecular prediction walkthrough</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="topbar">
+  <div class="brand"><span class="brand-mark" aria-hidden="true">CF</span><span>CliffForge <small>Evaluator demo</small></span></div>
+  <div class="topbar-right"><span class="local-pill">LOCAL · FOLD 3</span><span id="readiness" class="readiness checking" role="status">Checking models…</span></div>
+</header>
+
+<main id="main">
+  <section class="hero" aria-labelledby="page-title">
+    <div class="eyebrow"><span class="eyebrow-line"></span> ACTIVITY CLIFF EXPLORER</div>
+    <h1 id="page-title">Two models. One molecular change.</h1>
+    <p>Enter a candidate and a measured reference to see how CliffForge and ChemProp reach their predictions. Every number below comes from live, locally loaded fold-3 checkpoints.</p>
+  </section>
+
+  <section class="input-layout" aria-label="Prediction inputs">
+    <div class="panel input-panel">
+      <div class="panel-heading"><span class="step-number">01</span><div><p class="overline">START HERE</p><h2>Choose two molecules</h2></div></div>
+      <form id="predict-form">
+        <div class="field-grid">
+          <label class="field"><span>Candidate SMILES <span class="required">*</span></span><textarea id="candidate-smiles" name="candidate_smiles" rows="2" spellcheck="false" placeholder="Molecule to evaluate" required></textarea></label>
+          <label class="field"><span>Reference SMILES <span class="required">*</span></span><textarea id="reference-smiles" name="reference_smiles" rows="2" spellcheck="false" placeholder="Molecule with known activity" required></textarea></label>
+        </div>
+        <div class="activity-row">
+          <label class="field activity-input"><span>Measured reference activity <span class="required">*</span></span><input id="reference-activity" name="reference_activity" type="number" step="any" required placeholder="e.g. 85.874"></label>
+          <label class="field unit-input"><span>Unit</span><select id="activity-unit" name="unit"><option value="ic50_um">IC₅₀ (µM)</option><option value="pIC50">pIC₅₀</option></select></label>
+          <p class="input-hint">ChemProp uses this measured reference value. Positive ΔpIC₅₀ means the candidate is more potent.</p>
+        </div>
+        <div class="actions">
+          <button id="predict-button" class="button button-primary" type="submit" disabled><span aria-hidden="true">◆</span> Predict with both models</button>
+          <button id="example-button" class="button button-secondary" type="button">Load detected cliff example</button>
+          <button id="reset-button" class="button button-text" type="button">Reset</button>
+        </div>
+        <div id="form-error" class="error-box hidden" role="alert"></div>
+      </form>
+    </div>
+    <aside class="panel method-panel">
+      <div class="panel-heading compact"><span class="method-icon" aria-hidden="true">↗</span><div><p class="overline">THE QUESTION</p><h2>Candidate minus reference</h2></div></div>
+      <p class="method-copy">Both predictions use the same molecule pair and reference measurement. Their routes through the models differ.</p>
+      <div class="method-path cf-path"><span class="path-symbol">C</span><div><strong>CliffForge</strong><small>Compares both molecular graphs directly and predicts ΔpIC₅₀.</small></div></div>
+      <div class="method-path cp-path"><span class="path-symbol">P</span><div><strong>ChemProp</strong><small>Predicts candidate pIC₅₀, then subtracts the measured reference pIC₅₀.</small></div></div>
+      <p class="method-footnote">Three trained seeds per model · one fixed outer fold · no new training</p>
+    </aside>
+  </section>
+
+  <section id="workflow" class="workflow hidden" aria-labelledby="workflow-title">
+    <div class="section-head"><div><p class="overline">LIVE MODEL WALKTHROUGH</p><h2 id="workflow-title">Follow the prediction</h2></div><span id="pair-badge" class="pair-badge"></span></div>
+    <div id="progress" class="progress" role="group" aria-label="Processing stages"></div>
+    <div id="stage-content" class="stage-content" aria-live="polite"></div>
+    <div class="stage-controls">
+      <button id="previous-stage" class="button button-secondary" type="button">← Previous</button>
+      <span id="stage-position" class="stage-position"></span>
+      <button id="next-stage" class="button button-secondary" type="button">Next →</button>
+      <button id="replay-button" class="button button-text" type="button">↻ Replay explanation</button>
+    </div>
+  </section>
+
+  <section id="final-results" class="final-results hidden" aria-labelledby="results-title">
+    <div class="section-head"><div><p class="overline">FINAL PREDICTION</p><h2 id="results-title">Side-by-side results</h2></div><span class="small-note">Seed spread is model disagreement, not a confidence interval.</span></div>
+    <div id="result-cards" class="result-cards"></div>
+    <div id="example-actions" class="example-actions hidden">
+      <p>This is a selected held-out pair that CliffForge detected correctly. Reveal its measured outcome after reviewing the predictions.</p>
+      <button id="reveal-button" class="button button-secondary" type="button">Reveal measured outcome</button>
+    </div>
+    <div id="truth-panel" class="truth-panel hidden" aria-live="polite"></div>
+  </section>
+
+  <details id="provenance" class="provenance">
+    <summary>Model and data provenance</summary>
+    <div id="provenance-content">Loading local checkpoint details…</div>
+  </details>
+</main>
+
+<footer class="footer">
+  <span>CliffForge · Dablander MMP study</span>
+  <span>Illustrative fold-3 inference · local service</span>
+</footer>
+</body>
+</html>

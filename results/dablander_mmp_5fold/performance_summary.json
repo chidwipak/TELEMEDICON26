@@ -1,0 +1,581 @@
+{
+  "protocol": {
+    "dataset": "Dablander COVID Moonshot SARS-CoV-2 Mpro cleaned molecule and MMP tables",
+    "source": "https://github.com/MarkusFerdinandDablander/QSAR-activity-cliff-experiments",
+    "source_commit": "3081a1a40e3f5105a60b6d8b41f1ce69f8a0f453",
+    "source_counts_expected": {
+      "molecules": 1924,
+      "mmps": 12594
+    },
+    "activity": "pIC50 = 6 - log10(IC50 in micromolar)",
+    "cliff": {
+      "positive_abs_delta_gte": 2.0,
+      "negative_abs_delta_lte": 1.0,
+      "intermediate": "exclude only from binary detection",
+      "predicted_abs_delta_gt": 1.5
+    },
+    "splits": {
+      "outer": "molecule-level shuffled KFold",
+      "n_folds": 5,
+      "seed": 17017,
+      "chemprop_internal": "ChemProp 1.6.1 default random 80/10/10 of outer train"
+    },
+    "model_seeds": [
+      0,
+      1,
+      2
+    ],
+    "relative_max_epochs": 70,
+    "relative_batch_size": 32,
+    "chemprop_version": "1.6.1",
+    "chemprop_batch_size": 50,
+    "knn_fingerprint": "Morgan radius 2, 2048 bits, no chirality",
+    "embedded_model_code_sha256": {
+      "src/cliffforge/features.py": "5951069a83e9909b23ca6b90517ec74079b31c9cbd8bd440f0c3bf01b7251150",
+      "src/cliffforge/networks.py": "e52ee2bb5efa557f36c77a2ae9f75ec0ab2795c3d4a49ffe30ad7fa232aa9b71"
+    },
+    "chemprop_max_epochs": 60,
+    "relative_checkpoint_selection": "final checkpoint after 70 epochs",
+    "relative_training_pairs": "Dablander supplied MMP rows with both endpoints in outer train",
+    "chemprop_checkpoint_selection": "best internal validation RMSE over 60 epochs",
+    "lead_top_fraction_per_fold": 0.1,
+    "bootstrap_resamples": 5000,
+    "primary_metrics": [
+      "strict_test_test_AP",
+      "local_reference_mean_Spearman",
+      "lead_top10_mean_measured_delta"
+    ],
+    "contrasts": "CliffForge minus ChemProp and CliffForge minus 5-NN on each primary metric",
+    "multiplicity": "six two-sided Bonferroni-adjusted percentile cluster-bootstrap intervals, FWER 0.05"
+  },
+  "counts": {
+    "source_molecules": 1924,
+    "source_mmps": 12594,
+    "strict_test_test_pairs": 2475,
+    "known_reference_test_train_rows": 20238,
+    "strict_binary_cliffs": 106,
+    "strict_binary_noncliffs": 2026,
+    "rank_reference_groups": 2014,
+    "rank_unique_reference_molecules": 733
+  },
+  "primary_metric_points": {
+    "strict_AP": {
+      "cliffforge": 0.39051164217984236,
+      "chemprop": 0.1368881455869168,
+      "knn_5nn": 0.09234489438110287
+    },
+    "within_series_rho": {
+      "cliffforge": 0.509184084669463,
+      "chemprop": 0.3428579506096649,
+      "knn_5nn": 0.2866126297560527
+    },
+    "lead_top10_gain": {
+      "cliffforge": 1.1164663019461836,
+      "chemprop": 1.0020869639925463,
+      "knn_5nn": 0.8237521890636008
+    }
+  },
+  "primary_paired_contrasts": {
+    "strict_AP__vs__chemprop": {
+      "point_difference": 0.25362349659292555,
+      "valid_resamples": 5000,
+      "ci95": [
+        -0.012307792863668258,
+        0.48569772351537627
+      ],
+      "familywise_adjusted_ci": [
+        -0.09836836986389634,
+        0.5637746446754707
+      ],
+      "superiority_supported": false
+    },
+    "strict_AP__vs__knn_5nn": {
+      "point_difference": 0.2981667477987395,
+      "valid_resamples": 5000,
+      "ci95": [
+        0.03945274769415152,
+        0.5356417448860978
+      ],
+      "familywise_adjusted_ci": [
+        -0.030958977872850665,
+        0.6017342884983968
+      ],
+      "superiority_supported": false
+    },
+    "within_series_rho__vs__chemprop": {
+      "point_difference": 0.16632613405979807,
+      "valid_resamples": 5000,
+      "ci95": [
+        0.14239060553563979,
+        0.189987905393105
+      ],
+      "familywise_adjusted_ci": [
+        0.13422871670244158,
+        0.1974749822328324
+      ],
+      "superiority_supported": true
+    },
+    "within_series_rho__vs__knn_5nn": {
+      "point_difference": 0.2225714549134103,
+      "valid_resamples": 5000,
+      "ci95": [
+        0.19844460340605077,
+        0.2461262121951864
+      ],
+      "familywise_adjusted_ci": [
+        0.1898283855040504,
+        0.25391744925993825
+      ],
+      "superiority_supported": true
+    },
+    "lead_top10_gain__vs__chemprop": {
+      "point_difference": 0.1143793379536373,
+      "valid_resamples": 5000,
+      "ci95": [
+        -0.013132634116679741,
+        0.22264977237804515
+      ],
+      "familywise_adjusted_ci": [
+        -0.05868674553150349,
+        0.265545637832387
+      ],
+      "superiority_supported": false
+    },
+    "lead_top10_gain__vs__knn_5nn": {
+      "point_difference": 0.29271411288258276,
+      "valid_resamples": 5000,
+      "ci95": [
+        0.1247873072627414,
+        0.4430823219243094
+      ],
+      "familywise_adjusted_ci": [
+        0.07420329487612433,
+        0.5083700146839767
+      ],
+      "superiority_supported": true
+    }
+  },
+  "joint_superiority_supported": false,
+  "cliff_detection": {
+    "test_test": {
+      "n_binary_pairs": 2132,
+      "n_cliffs": 106,
+      "n_noncliffs": 2026,
+      "n_halfAC_excluded_only_here": 343,
+      "prevalence": 0.04971857410881801,
+      "models": {
+        "cliffforge": {
+          "average_precision": 0.39051164217984236,
+          "roc_auc": 0.7998984894484904,
+          "mcc_at_1p5": 0.30498658397060097,
+          "accuracy_at_1p5": 0.9521575984990619,
+          "f1_at_1p5": 0.28169014084507044,
+          "precision_at_1p5": 0.5555555555555556,
+          "recall_at_1p5": 0.18867924528301888,
+          "tp": 20,
+          "fp": 16,
+          "tn": 2010,
+          "fn": 86
+        },
+        "chemprop": {
+          "average_precision": 0.1368881455869168,
+          "roc_auc": 0.7340842630706477,
+          "mcc_at_1p5": 0.0,
+          "accuracy_at_1p5": 0.950281425891182,
+          "f1_at_1p5": 0.0,
+          "precision_at_1p5": 0.0,
+          "recall_at_1p5": 0.0,
+          "tp": 0,
+          "fp": 0,
+          "tn": 2026,
+          "fn": 106
+        },
+        "knn_5nn": {
+          "average_precision": 0.09234489438110287,
+          "roc_auc": 0.6137500232822366,
+          "mcc_at_1p5": -0.011090074645804816,
+          "accuracy_at_1p5": 0.9479362101313321,
+          "f1_at_1p5": 0.0,
+          "precision_at_1p5": 0.0,
+          "recall_at_1p5": 0.0,
+          "tp": 0,
+          "fp": 5,
+          "tn": 2021,
+          "fn": 106
+        }
+      }
+    },
+    "test_train": {
+      "n_binary_pairs": 17400,
+      "n_cliffs": 830,
+      "n_noncliffs": 16570,
+      "n_halfAC_excluded_only_here": 2838,
+      "prevalence": 0.04770114942528736,
+      "models": {
+        "cliffforge": {
+          "average_precision": 0.6577261242191843,
+          "roc_auc": 0.8705038500410817,
+          "mcc_at_1p5": 0.6208000304876996,
+          "accuracy_at_1p5": 0.970919540229885,
+          "f1_at_1p5": 0.6040688575899843,
+          "precision_at_1p5": 0.8616071428571429,
+          "recall_at_1p5": 0.4650602409638554,
+          "tp": 386,
+          "fp": 62,
+          "tn": 16508,
+          "fn": 444
+        },
+        "chemprop": {
+          "average_precision": 0.595027060870437,
+          "roc_auc": 0.9226250081799741,
+          "mcc_at_1p5": 0.567116140129725,
+          "accuracy_at_1p5": 0.9676436781609196,
+          "f1_at_1p5": 0.5463336019339242,
+          "precision_at_1p5": 0.8248175182481752,
+          "recall_at_1p5": 0.40843373493975904,
+          "tp": 339,
+          "fp": 72,
+          "tn": 16498,
+          "fn": 491
+        },
+        "knn_5nn": {
+          "average_precision": 0.40111339099074483,
+          "roc_auc": 0.8233850186503406,
+          "mcc_at_1p5": 0.4367810873839412,
+          "accuracy_at_1p5": 0.9570114942528736,
+          "f1_at_1p5": 0.44510385756676557,
+          "precision_at_1p5": 0.5791505791505791,
+          "recall_at_1p5": 0.3614457831325301,
+          "tp": 300,
+          "fp": 218,
+          "tn": 16352,
+          "fn": 530
+        }
+      }
+    }
+  },
+  "relative_affinity": {
+    "all_heldout_pairs": {
+      "n_pairs": 22713,
+      "models": {
+        "cliffforge": {
+          "mae_delta_pIC50": 0.34421897655776484,
+          "rmse_delta_pIC50": 0.5274876117638987,
+          "pearson_r": 0.753263183152475,
+          "spearman_rho": 0.7211324149716359,
+          "direction_accuracy_nonzero": 0.7983911513323279,
+          "n_nonzero_direction_pairs": 19890
+        },
+        "chemprop": {
+          "mae_delta_pIC50": 0.4159051439026373,
+          "rmse_delta_pIC50": 0.5592441654741931,
+          "pearson_r": 0.7157834330858008,
+          "spearman_rho": 0.6637269582882901,
+          "direction_accuracy_nonzero": 0.7520864756158874,
+          "n_nonzero_direction_pairs": 19890
+        },
+        "knn_5nn": {
+          "mae_delta_pIC50": 0.4679513987726546,
+          "rmse_delta_pIC50": 0.6422606487704163,
+          "pearson_r": 0.6260781234931231,
+          "spearman_rho": 0.6004669039650279,
+          "direction_accuracy_nonzero": 0.7441427853192559,
+          "n_nonzero_direction_pairs": 19890
+        }
+      }
+    },
+    "test_test": {
+      "n_pairs": 2475,
+      "models": {
+        "cliffforge": {
+          "mae_delta_pIC50": 0.45869660999368395,
+          "rmse_delta_pIC50": 0.657756624881306,
+          "pearson_r": 0.5752921456590483,
+          "spearman_rho": 0.5354175606896108,
+          "direction_accuracy_nonzero": 0.7236480293308891,
+          "n_nonzero_direction_pairs": 2182
+        },
+        "chemprop": {
+          "mae_delta_pIC50": 0.521630346572255,
+          "rmse_delta_pIC50": 0.7261216284233699,
+          "pearson_r": 0.40224865539893057,
+          "spearman_rho": 0.36133883759165764,
+          "direction_accuracy_nonzero": 0.6397800183318056,
+          "n_nonzero_direction_pairs": 2182
+        },
+        "knn_5nn": {
+          "mae_delta_pIC50": 0.5692949453380917,
+          "rmse_delta_pIC50": 0.7949052673277347,
+          "pearson_r": 0.2673111154853771,
+          "spearman_rho": 0.2978793468095096,
+          "direction_accuracy_nonzero": 0.6264894592117324,
+          "n_nonzero_direction_pairs": 2182
+        }
+      }
+    },
+    "test_train": {
+      "n_pairs": 20238,
+      "models": {
+        "cliffforge": {
+          "mae_delta_pIC50": 0.3302189695040096,
+          "rmse_delta_pIC50": 0.5092747852883841,
+          "pearson_r": 0.7724146172523673,
+          "spearman_rho": 0.7412736054618078,
+          "direction_accuracy_nonzero": 0.8076010842557036,
+          "n_nonzero_direction_pairs": 17708
+        },
+        "chemprop": {
+          "mae_delta_pIC50": 0.40297551268377657,
+          "rmse_delta_pIC50": 0.5352774965105918,
+          "pearson_r": 0.7447673879698155,
+          "spearman_rho": 0.692166781151256,
+          "direction_accuracy_nonzero": 0.7659250056471651,
+          "n_nonzero_direction_pairs": 17708
+        },
+        "knn_5nn": {
+          "mae_delta_pIC50": 0.45555762084255,
+          "rmse_delta_pIC50": 0.6210235615540529,
+          "pearson_r": 0.658074008719221,
+          "spearman_rho": 0.6288336899681933,
+          "direction_accuracy_nonzero": 0.7586401626383555,
+          "n_nonzero_direction_pairs": 17708
+        }
+      }
+    },
+    "within_series_reference_pairs": {
+      "n_pairs": 17844,
+      "models": {
+        "cliffforge": {
+          "mae_delta_pIC50": 0.3105289632198571,
+          "rmse_delta_pIC50": 0.47033702131863325,
+          "pearson_r": 0.8073336149400804,
+          "spearman_rho": 0.774317810906066,
+          "direction_accuracy_nonzero": 0.8240669240669241,
+          "n_nonzero_direction_pairs": 15540
+        },
+        "chemprop": {
+          "mae_delta_pIC50": 0.39502724343678974,
+          "rmse_delta_pIC50": 0.5230233077444582,
+          "pearson_r": 0.7541969823061885,
+          "spearman_rho": 0.6999409323987871,
+          "direction_accuracy_nonzero": 0.7711711711711712,
+          "n_nonzero_direction_pairs": 15540
+        },
+        "knn_5nn": {
+          "mae_delta_pIC50": 0.4495539709161667,
+          "rmse_delta_pIC50": 0.6136775285400963,
+          "pearson_r": 0.6644536201119929,
+          "spearman_rho": 0.6336370433107902,
+          "direction_accuracy_nonzero": 0.7626126126126126,
+          "n_nonzero_direction_pairs": 15540
+        }
+      }
+    }
+  },
+  "potency_direction": {
+    "test_test": {
+      "n_nonzero_pairs": 2182,
+      "accuracy": {
+        "cliffforge": 0.7236480293308891,
+        "chemprop": 0.6397800183318056,
+        "knn_5nn": 0.6264894592117324
+      }
+    },
+    "test_train": {
+      "n_nonzero_pairs": 17708,
+      "accuracy": {
+        "cliffforge": 0.8076010842557036,
+        "chemprop": 0.7659250056471651,
+        "knn_5nn": 0.7586401626383555
+      }
+    }
+  },
+  "lead_secondary_pooled": {
+    "cliffforge": {
+      "n_selected_proposals": 2026,
+      "fraction_actual_gain_gt_0": 0.9284304047384008,
+      "fraction_actual_gain_gte_0p5": 0.8390918065153011
+    },
+    "chemprop": {
+      "n_selected_proposals": 2026,
+      "fraction_actual_gain_gt_0": 0.815893385982231,
+      "fraction_actual_gain_gte_0p5": 0.702862783810464
+    },
+    "knn_5nn": {
+      "n_selected_proposals": 2026,
+      "fraction_actual_gain_gt_0": 0.6900296150049359,
+      "fraction_actual_gain_gte_0p5": 0.6209279368213229
+    }
+  },
+  "lead_secondary_by_fold": {
+    "cliffforge": [
+      {
+        "fold": 0,
+        "n_candidates": 4122,
+        "budget": 413,
+        "mean_measured_gain": 1.0002640861372238,
+        "fraction_actual_gain_gt_0": 0.9297820823244553,
+        "fraction_actual_gain_gte_0p5": 0.801452784503632
+      },
+      {
+        "fold": 1,
+        "n_candidates": 4269,
+        "budget": 427,
+        "mean_measured_gain": 1.526854129860503,
+        "fraction_actual_gain_gt_0": 0.9250585480093677,
+        "fraction_actual_gain_gte_0p5": 0.8969555035128806
+      },
+      {
+        "fold": 2,
+        "n_candidates": 3951,
+        "budget": 396,
+        "mean_measured_gain": 0.9528768825693233,
+        "fraction_actual_gain_gt_0": 0.9141414141414141,
+        "fraction_actual_gain_gte_0p5": 0.7752525252525253
+      },
+      {
+        "fold": 3,
+        "n_candidates": 3788,
+        "budget": 379,
+        "mean_measured_gain": 1.0631002281062727,
+        "fraction_actual_gain_gt_0": 0.9656992084432717,
+        "fraction_actual_gain_gte_0p5": 0.8865435356200527
+      },
+      {
+        "fold": 4,
+        "n_candidates": 4108,
+        "budget": 411,
+        "mean_measured_gain": 1.0137000359321902,
+        "fraction_actual_gain_gt_0": 0.9099756690997567,
+        "fraction_actual_gain_gte_0p5": 0.8345498783454988
+      }
+    ],
+    "chemprop": [
+      {
+        "fold": 0,
+        "n_candidates": 4122,
+        "budget": 413,
+        "mean_measured_gain": 0.8982040270731708,
+        "fraction_actual_gain_gt_0": 0.8595641646489104,
+        "fraction_actual_gain_gte_0p5": 0.7312348668280871
+      },
+      {
+        "fold": 1,
+        "n_candidates": 4269,
+        "budget": 427,
+        "mean_measured_gain": 1.4451544398444305,
+        "fraction_actual_gain_gt_0": 0.9437939110070258,
+        "fraction_actual_gain_gte_0p5": 0.8782201405152225
+      },
+      {
+        "fold": 2,
+        "n_candidates": 3951,
+        "budget": 396,
+        "mean_measured_gain": 0.8984814716445729,
+        "fraction_actual_gain_gt_0": 0.7575757575757576,
+        "fraction_actual_gain_gte_0p5": 0.6464646464646465
+      },
+      {
+        "fold": 3,
+        "n_candidates": 3788,
+        "budget": 379,
+        "mean_measured_gain": 0.9178122318942661,
+        "fraction_actual_gain_gt_0": 0.7546174142480211,
+        "fraction_actual_gain_gte_0p5": 0.6754617414248021
+      },
+      {
+        "fold": 4,
+        "n_candidates": 4108,
+        "budget": 411,
+        "mean_measured_gain": 0.8236970350241604,
+        "fraction_actual_gain_gt_0": 0.7518248175182481,
+        "fraction_actual_gain_gte_0p5": 0.5717761557177615
+      }
+    ],
+    "knn_5nn": [
+      {
+        "fold": 0,
+        "n_candidates": 4122,
+        "budget": 413,
+        "mean_measured_gain": 0.8856375229762519,
+        "fraction_actual_gain_gt_0": 0.8256658595641646,
+        "fraction_actual_gain_gte_0p5": 0.7602905569007264
+      },
+      {
+        "fold": 1,
+        "n_candidates": 4269,
+        "budget": 427,
+        "mean_measured_gain": 0.960656828688218,
+        "fraction_actual_gain_gt_0": 0.7213114754098361,
+        "fraction_actual_gain_gte_0p5": 0.6721311475409836
+      },
+      {
+        "fold": 2,
+        "n_candidates": 3951,
+        "budget": 396,
+        "mean_measured_gain": 0.5959597580072934,
+        "fraction_actual_gain_gt_0": 0.4823232323232323,
+        "fraction_actual_gain_gte_0p5": 0.4292929292929293
+      },
+      {
+        "fold": 3,
+        "n_candidates": 3788,
+        "budget": 379,
+        "mean_measured_gain": 0.9201112793026044,
+        "fraction_actual_gain_gt_0": 0.7361477572559367,
+        "fraction_actual_gain_gte_0p5": 0.6649076517150396
+      },
+      {
+        "fold": 4,
+        "n_candidates": 4108,
+        "budget": 411,
+        "mean_measured_gain": 0.7499536087036955,
+        "fraction_actual_gain_gt_0": 0.6788321167883211,
+        "fraction_actual_gain_gte_0p5": 0.5717761557177615
+      }
+    ]
+  },
+  "fold_counts": [
+    {
+      "fold": 0,
+      "n_outer_train": 1539,
+      "n_outer_test": 385,
+      "n_test_test_pairs": 513,
+      "n_test_train_pairs": 4122,
+      "finished_utc": "2026-10-19T21:51:55.173498+00:00"
+    },
+    {
+      "fold": 1,
+      "n_outer_train": 1539,
+      "n_outer_test": 385,
+      "n_test_test_pairs": 562,
+      "n_test_train_pairs": 4269,
+      "finished_utc": "2026-10-19T22:10:14.023330+00:00"
+    },
+    {
+      "fold": 2,
+      "n_outer_train": 1539,
+      "n_outer_test": 385,
+      "n_test_test_pairs": 472,
+      "n_test_train_pairs": 3951,
+      "finished_utc": "2026-10-19T22:29:21.590583+00:00"
+    },
+    {
+      "fold": 3,
+      "n_outer_train": 1539,
+      "n_outer_test": 385,
+      "n_test_test_pairs": 416,
+      "n_test_train_pairs": 3788,
+      "finished_utc": "2026-10-19T22:48:55.765819+00:00"
+    },
+    {
+      "fold": 4,
+      "n_outer_train": 1540,
+      "n_outer_test": 384,
+      "n_test_test_pairs": 512,
+      "n_test_train_pairs": 4108,
+      "finished_utc": "2026-10-19T23:07:09.919711+00:00"
+    }
+  ],
+  "interpretation": "Exploratory new five-fold protocol on Dablander Mpro; six planned contrasts; no cross-target generalization."
+}

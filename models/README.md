@@ -1,6 +1,8 @@
 # Model weights
 
-**No model weights are bundled in this repository** (they are git-ignored). Place or generate them locally as below.
+**Model weights are not committed to Git**. The original Moonshot commands expect checkpoints under `models/`;
+the completed Dablander run's checkpoints are present locally under `results/dablander_mmp_5fold/` and are
+git-ignored. The two runs use different checkpoint directories.
 
 ## 1. Relative-affinity model: `models/rel_siamese_s{0,1,2}.pt`
 
@@ -37,7 +39,7 @@ checkpoints above.
 
 ChemProp 1.6.1 regression model (D-MPNN, depth 3, hidden 300, 60 epochs, defaults otherwise, ChemProp's internal random
 0.8/0.1/0.1 split) trained on the Moonshot **train** pIC50 table. The directory must contain
-`fold_0/model_0/model.pt` (and `args.json`).
+`fold_0/model_0/model.pt`; ChemProp also writes `args.json` at the directory root.
 
 ```bash
 bash scripts/train_chemprop_baseline.sh       # writes models/chemprop_moonshot/
@@ -49,6 +51,22 @@ Reference checkpoint SHA-256 (`fold_0/model_0/model.pt`):
 b0efb884d863ca05d0ad449658c5556081078744beb0692e6cefc9ecaab5b18d
 ```
 
+## 3. Dablander MMP five-fold evaluation models
+
+The completed run is kept together under `results/dablander_mmp_5fold/`. For each outer fold `0` through `4`, its three
+CliffForge checkpoints are `fold_<fold>/cliffforge/seed_<seed>/final.pt`; its three ChemProp 1.6.1 checkpoints are
+`fold_<fold>/chemprop/seed_<seed>/fold_0/model_0/model.pt`, with seeds `0`, `1`, and `2`. This is **15 checkpoints per
+neural model**, paired with the run's split IDs, training logs, predictions, and checksum manifest. The checkpoints
+remain local and git-ignored. Use the checkpoint from the matching outer fold when reproducing a held-out prediction;
+the five-fold aggregate in `results/dablander_mmp_5fold/performance_summary.json` is an evaluation result, not a
+single deployable checkpoint.
+
+The Dablander notebook trains CliffForge on supplied MMP rows whose two molecules are in the outer training pool.
+It saves CliffForge's final checkpoint after 70 epochs (batch size 32). ChemProp trains on the same outer-training
+molecules, makes its own 80/10/10 split within that pool, and saves the best internal-validation checkpoint from
+up to 60 epochs. The 5-NN baseline has no trained checkpoint. The Moonshot training scripts above do not recreate
+these Dablander fold checkpoints; use `CliffForge_Dablander_5Fold_Colab.ipynb` for that run.
+
 ## What needs which weights
 
 | Command | Needs |
@@ -56,4 +74,8 @@ b0efb884d863ca05d0ad449658c5556081078744beb0692e6cefc9ecaab5b18d
 | `scripts/run_demo.sh` | `rel_siamese_s*.pt` (+ `data/moonshot/all.csv`); `--no-score` runs generation only |
 | `scripts/run_evaluation.sh` | `rel_siamese_s*.pt`, `chemprop_moonshot/`, `data/moonshot/all.csv` |
 | `scripts/run_validation_cv.sh` (optional, ~20 min) | `data/moonshot/all.csv`, ChemProp CLI |
-| `python -m unittest discover -s tests` | none (weight/data tests are skipped when absent) |
+| `PYTHONPATH=src python -m unittest discover -s tests -p test_generation.py` | none |
+
+The full `unittest discover -s tests` command currently fails because legacy `tests/test_mmp_pairs.py` imports a
+removed MMP-pair helper. The generation tests above pass without data or weights; data/weight-dependent tests are
+skipped when those files are absent.

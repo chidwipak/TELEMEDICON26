@@ -14,6 +14,16 @@ models/*
 *.pkl
 *.npz
 
+# Keep the full Dablander run locally; version its summary and audit trail only.
+/results/dablander_mmp_5fold/*
+!/results/dablander_mmp_5fold/RESULTS_README.md
+!/results/dablander_mmp_5fold/performance_summary.json
+!/results/dablander_mmp_5fold/protocol.json
+!/results/dablander_mmp_5fold/environment.json
+!/results/dablander_mmp_5fold/raw_sha256.json
+!/results/dablander_mmp_5fold/bootstrap_paired_differences.csv
+!/results/dablander_mmp_5fold/sha256_manifest.csv
+
 # --- generated outputs, logs, caches ---
 outputs/
 logs/

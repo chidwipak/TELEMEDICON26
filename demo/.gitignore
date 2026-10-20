@@ -1,0 +1,5 @@
+# demo/.gitignore — keep model weights and caches out of Git
+__pycache__/
+*.py[cod]
+*.log
+.env
